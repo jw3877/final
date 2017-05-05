@@ -29,8 +29,7 @@ DEBUG = True
 # Application definition
 
 INSTALLED_APPS = [
-    'polls.apps.ReservationConfig',
-    'django.contrib.admin',
+    'reservation.apps.ReservationConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
