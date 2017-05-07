@@ -6,6 +6,10 @@ owner: {{resource.owner.username}} ({{resource.owner.email}})
 start time: {{resource.start_time}}
 <br>
 end time: {{resource.end_time}}
+<br>
+{% if resource.owner == user %}
+(<a href="{% url 'editResource' resource.id %}">Edit</a>)
+{% endif %}
 
 <h1>Reservations:</h1>
 <br>

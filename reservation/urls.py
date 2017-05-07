@@ -16,6 +16,9 @@ urlpatterns = [
     # ex: /resource/5/reserve/
     url(r'^resource/(?P<resource_id>[0-9]+)/reserve/$', views.createReservation, name='createReservation'),
 
+    # ex: /resource/5/edit/
+    url(r'^resource/(?P<resource_id>[0-9]+)/edit/$', views.editResource, name='editResource'),
+
     # ex: /reservation/5/
     url(r'^reservation/(?P<reservation_id>[0-9]+)/$', views.reservation, name='reservation'),
 

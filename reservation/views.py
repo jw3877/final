@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -46,42 +46,59 @@ def reservation(request, reservation_id):
 @login_required
 def createResource(request):
   if request.method == 'POST':
-    f = ResourceForm(request.POST)
-    new_resource = f.save(commit=False)
-    new_resource.owner = request.user
-    new_resource.save()
-    return HttpResponseRedirect(reverse('index'))
+    resource_form = ResourceForm(request.POST)
+    if resource_form.is_valid():
+      new_resource = f.save(commit=False)
+      new_resource.owner = request.user
+      new_resource.save()
+      return HttpResponseRedirect(reverse('index'))
     
-  resource_form = ResourceForm()
-  context = {'resource_form': resource_form}
-  return render(request, 'reservation/createResource.html', context)
+  else:
+    resource_form = ResourceForm()
+
+  return render(request, 'reservation/createResource.html', {'resource_form': resource_form})
 
 @login_required
 def createReservation(request, resource_id):
   resource = get_object_or_404(Resource, pk=resource_id)
 
   if request.method == 'POST':
-    f = ReservationForm(request.POST)
-    new_reservation = f.save(commit=False)
-    new_reservation.resource = resource
-    new_reservation.owner = request.user
-    
-    if new_reservation.duration <= 0:
-      reservation_form = ReservationForm(request.POST)
-      context = {
-        'reservation_form': reservation_form,
-        'error_message': 'duration must be at least 1 minute',
-        'resource': resource
-      }
-      return render(request, 'reservation/createReservation.html', context)
+    reservation_form = ReservationForm(request.POST)
+    if reservation_form.is_valid():
+      new_reservation = reservation_form.save(commit=False)
+      new_reservation.resource = resource
+      new_reservation.owner = request.user
+      new_reservation.save()
+      return HttpResponseRedirect(reverse('index'))
 
-    new_reservation.save()
-    return HttpResponseRedirect(reverse('index'))
-  reservation_form = ReservationForm()
+  else:
+    reservation_form = ReservationForm()
+    
   context = {
     'reservation_form': reservation_form,
     'resource': resource
   }
+
   return render(request, 'reservation/createReservation.html', context)
+
+@login_required
+def editResource(request, resource_id):
+  resource = get_object_or_404(Resource, pk=resource_id)
+
+  if request.method == 'POST':
+    resource_form = ResourceForm(request.POST, instance=resource)
+    if resource_form.is_valid():
+      resource_form.save()
+      return redirect('resource', resource.id)
+
+  else:
+    resource_form = ResourceForm(instance=resource)
+
+  context = {
+    'resource_form': resource_form,
+    'resource': resource
+  }
+
+  return render(request, 'reservation/editResource.html', context)
 
 
