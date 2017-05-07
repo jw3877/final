@@ -11,7 +11,15 @@ from .forms import ResourceForm
 
 def index(request):
   resource_list = Resource.objects.order_by('-start_time')
-  context = {'resource_list': resource_list}
+  context = {
+    'resource_list': resource_list,
+    'user_resource_list': []
+  }
+
+  if request.user.is_authenticated:
+    user_resource_list = Resource.objects.filter(owner=request.user)
+    context['user_resource_list'] = user_resource_list
+
   return render(request, 'reservation/index.html', context)
 
 def detail(request, resource_id):

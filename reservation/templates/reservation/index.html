@@ -1,21 +1,28 @@
 <!-- landing page -->
 <!-- reservations made for resources by that user, sorted by reservation time -->
 
+{% extends "base_generic.html" %}
+{% block content %}
+
+Welcome to OpenResource!
+
 <!-- resources that the user owns, each linked to its URL -->
 
+{% if user_resource_list %}
+  <h1>My Resources</h1>
+  <ul>
+  {% for resource in user_resource_list %}
+    <li><a href="{% url 'detail' resource.id %}">{{ resource.name }}</a></li>
+  {% endfor %}
+  </ul>
 
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Title</title>
-</head>
+{% endif %}
 
-<body>
-Test! :D
 <br>
+
 <!-- all resources in the system, shown in reverse time order based on last made reservation -->
 {% if resource_list %}
+  <h1>All Resources</h1>
   <ul>
   {% for resource in resource_list %}
     <li><a href="{% url 'detail' resource.id %}">{{ resource.name }}</a></li>
@@ -26,11 +33,4 @@ Test! :D
     <p>No resources are available.</p>
 {% endif %}
 
-
-<br>
-
-<!-- a link to create a new resource. -->
-<a href="{% url 'create' %}">Create Resource</a>
-</body>
-
-</html>
+{% endblock %}

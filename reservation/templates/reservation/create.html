@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Title</title>
-</head>
+{% extends "base_generic.html" %}
+{% block content %}
 
-<body>
   <h1>Create new resource:</h1>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
@@ -20,9 +15,4 @@
 {% endif %}
 <!-- End Form -->
   
-<br>
-
-<a href="{% url 'index' %}">Home</a>
-</body>
-
-</html>
+{% endblock %}
