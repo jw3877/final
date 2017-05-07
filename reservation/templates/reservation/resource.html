@@ -10,15 +10,28 @@ end time: {{resource.end_time}}
 <h1>Reservations:</h1>
 <br>
 {% if reservations_list %}
-  <ul>
+<table>
+  <tr>
+    <th>Username</th>
+    <th>E-mail</th> 
+    <th>Start Time</th>
+    <th>Duration (Minutes)</th>
+    <th>Link</th>
+  </tr>
   {% for reservation in reservations_list %}
-    <li><a href="{% url 'detail' resource.id %}">{{ reservation.name }}</a></li>
+    <tr><td> {{ reservation.owner.username }} </td>
+    <td> {{ reservation.owner.email }} </td>
+    <td> {{ reservation.start_time }} </td>   
+    <td> {{ reservation.duration }} </td>
+    <td><a href="{% url 'reservation' reservation.id %}">Link</a></td></tr>
   {% endfor %}
-  </ul>
+  </table>
   <br>
 
 {% else %}
     <p>No reservations.</p>
 {% endif %}
+
+<a href="{% url 'createReservation' resource.id %}">Create Reservation</a>
 
 {% endblock %}

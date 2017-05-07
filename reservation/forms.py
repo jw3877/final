@@ -12,4 +12,4 @@ class ResourceForm(ModelForm):
 class ReservationForm(ModelForm):
   class Meta:
     model = Reservation
-    fields = ['start_time', 'end_time']
+    fields = ['start_time', 'duration']

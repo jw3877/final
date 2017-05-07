@@ -18,10 +18,13 @@ class Resource(models.Model):
 class Reservation(models.Model):
   # reservation hours (will be any two times within the same day, e.g. 9am - 5pm)
   start_time = models.DateTimeField('reservation start time')
-  end_time = models.DateTimeField('reservation end time')
+  duration = models.IntegerField('duration (minutes)', default=0)
   
   # resource that has been reserved
   resource = models.ForeignKey(Resource)
+
+  # owner of the reservation
+  owner = models.ForeignKey(User)
 
   def __str__(self):
     return self.resource

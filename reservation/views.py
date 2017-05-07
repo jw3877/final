@@ -42,7 +42,6 @@ def reservation(request, reservation_id):
   }
   return render(request, 'reservation/reservation.html', context)
 
-  
 
 @login_required
 def createResource(request):
@@ -58,16 +57,31 @@ def createResource(request):
   return render(request, 'reservation/createResource.html', context)
 
 @login_required
-def createReservation(request):
+def createReservation(request, resource_id):
+  resource = get_object_or_404(Resource, pk=resource_id)
+
   if request.method == 'POST':
     f = ReservationForm(request.POST)
     new_reservation = f.save(commit=False)
+    new_reservation.resource = resource
     new_reservation.owner = request.user
+    
+    if new_reservation.duration <= 0:
+      reservation_form = ReservationForm(request.POST)
+      context = {
+        'reservation_form': reservation_form,
+        'error_message': 'duration must be at least 1 minute',
+        'resource': resource
+      }
+      return render(request, 'reservation/createReservation.html', context)
+
     new_reservation.save()
     return HttpResponseRedirect(reverse('index'))
-    
   reservation_form = ReservationForm()
-  context = {'reservation_form': reservation_form}
+  context = {
+    'reservation_form': reservation_form,
+    'resource': resource
+  }
   return render(request, 'reservation/createReservation.html', context)
 
 

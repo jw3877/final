@@ -7,7 +7,7 @@
 
 <!-- Begin Form -->
 {% if reservation_form %}
-<form action="{% url 'createReservation' %}" method="post">
+<form action="{% url 'createReservation' resource.id %}" method="post">
 {% csrf_token %}
 {{ reservation_form.as_p }}
 <input type="submit" value="Add Reservation" />

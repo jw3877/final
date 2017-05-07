@@ -4,3 +4,14 @@
     list-style: none;
     font-family: verdana;
 }
+
+table { 
+    border: 1px solid black;
+    border-spacing: 10px;
+    border-collapse: separate;
+}
+
+td, th{
+text-align: center;
+}
+

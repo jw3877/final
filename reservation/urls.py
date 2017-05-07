@@ -11,10 +11,10 @@ urlpatterns = [
     url(r'^resource/create/$', views.createResource, name='createResource'),
     
     # ex: /resource/5/
-    url(r'^resource/(?P<resource_id>[0-9]+)/$', views.resource, name='resource'),
+    url(r'^resource/(?P<resource_id>[0-9]+)/$', views.resource, name='resource'),\
 
-    # ex: /reservation/create/
-    url(r'^reservation/create/$', views.createReservation, name='createReservation'),
+    # ex: /resource/5/reserve/
+    url(r'^resource/(?P<resource_id>[0-9]+)/reserve/$', views.createReservation, name='createReservation'),
 
     # ex: /reservation/5/
     url(r'^reservation/(?P<reservation_id>[0-9]+)/$', views.reservation, name='reservation'),
