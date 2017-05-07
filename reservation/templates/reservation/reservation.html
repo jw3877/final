@@ -1,0 +1,12 @@
+{% extends "base_generic.html" %}
+{% block content %}
+<h1> Reservation </h1>
+resource: <a href="{% url 'resource' resource.id %}">{{ reservation.resource.name }}</a>
+<br>
+owner: {{reservation.resource.owner.username}} ({{reservation.resource.owner.email}})
+<br>
+start time: {{reservation.start_time}}
+<br>
+end time: {{reservation.end_time}}
+
+{% endblock %}

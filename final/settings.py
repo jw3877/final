@@ -133,5 +133,11 @@ STATICFILES_DIRS = [
 # https://warehouse.python.org/project/whitenoise/
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Redirect to home URL after login (Default redirects to /accounts/profile/)
+# login request URL (default: /accounts/login)
+LOGIN_URL = '/login/'
+
+# login redirect when no next parameter (default: /accounts/profile)
 LOGIN_REDIRECT_URL = '/'
+
+# logout redirect when no next parameter (default: None)
+LOGOUT_REDIRECT_URL = '/'

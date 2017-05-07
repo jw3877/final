@@ -1,16 +1,16 @@
 {% extends "base_generic.html" %}
 {% block content %}
 
-  <h1>Create new resource:</h1>
+  <h1>Create new reservation:</h1>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
 <!-- Begin Form -->
-{% if resource_form %}
-<form action="{% url 'create' %}" method="post">
+{% if reservation_form %}
+<form action="{% url 'createReservation' %}" method="post">
 {% csrf_token %}
-{{ resource_form.as_p }}
-<input type="submit" value="Add Resource" />
+{{ reservation_form.as_p }}
+<input type="submit" value="Add Reservation" />
 </form>
 {% endif %}
 <!-- End Form -->

@@ -1,0 +1,18 @@
+{% extends "base_generic.html" %}
+{% block content %}
+
+  <h1>Create new resource:</h1>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<!-- Begin Form -->
+{% if resource_form %}
+<form action="{% url 'createResource' %}" method="post">
+{% csrf_token %}
+{{ resource_form.as_p }}
+<input type="submit" value="Add Resource" />
+</form>
+{% endif %}
+<!-- End Form -->
+  
+{% endblock %}

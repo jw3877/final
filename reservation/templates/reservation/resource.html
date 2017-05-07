@@ -1,0 +1,24 @@
+{% extends "base_generic.html" %}
+{% block content %}
+<h1> {{resource.name}} </h1>
+owner: {{resource.owner.username}} ({{resource.owner.email}})
+<br>
+start time: {{resource.start_time}}
+<br>
+end time: {{resource.end_time}}
+
+<h1>Reservations:</h1>
+<br>
+{% if reservations_list %}
+  <ul>
+  {% for reservation in reservations_list %}
+    <li><a href="{% url 'detail' resource.id %}">{{ reservation.name }}</a></li>
+  {% endfor %}
+  </ul>
+  <br>
+
+{% else %}
+    <p>No reservations.</p>
+{% endif %}
+
+{% endblock %}
