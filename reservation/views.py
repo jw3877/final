@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
 
 #from django.contrib.admin import widgets
@@ -16,10 +17,13 @@ def index(request):
 def detail(request, resource_id):
     return HttpResponse("You're looking at resource %s." % resource_id)
 
+@login_required
 def create(request):
   if request.method == 'POST':
     f = ResourceForm(request.POST)
-    new_resource = f.save()
+    new_resource = f.save(commit=False)
+    new_resource.owner = request.user
+    new_resource.save()
     return HttpResponseRedirect(reverse('index'))
     
   resource_form = ResourceForm()

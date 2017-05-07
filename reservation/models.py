@@ -1,8 +1,12 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Resource(models.Model):
   # name of the resource
   name = models.CharField(max_length=200)
+
+  # owner of the resource
+  owner = models.ForeignKey(User)
 
   # availability hours (will be any two times within the same day, e.g. 9am - 5pm)
   start_time = models.DateTimeField('available start time')
