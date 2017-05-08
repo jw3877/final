@@ -1,0 +1,27 @@
+{% if reservation_list %}
+{% load static %}
+
+<table class="listing">
+  <tr>
+    <th>Resource</th>
+    <th>Reserved By</th> 
+    <th>E-mail</th> 
+    <th>Start Time</th>
+    <th>Duration (Minutes)</th>
+  </tr>
+
+  {% for reservation in reservation_list %}
+   <tr>
+    <td><a href="{% url 'resource' reservation.resource.id %}">{{ reservation.resource.name }}</a></td>
+    <td><a href="{% url 'user' reservation.owner.username %}">{{reservation.owner.username}}</a></td>
+    <td>{{reservation.resource.owner.email}}</td>
+    <td>{{reservation.start_time}}</td>
+    <td>{{reservation.duration}}</td>
+    </tr>
+  {% endfor %}
+  </table>
+  <br>
+
+{% else %}
+    <p>No reservations.</p>
+{% endif %}

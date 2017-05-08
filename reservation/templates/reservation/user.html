@@ -2,6 +2,10 @@
 {% block content %}
 <h1>{{username}}</h1>
 
-{% include "reservation/user_resources_reservations.html" %}
+  <h2>{{username}}'s Resources</h2>
+  {% include "reservation/snippet/resource_table.html" with resource_list=user_resources only %}
+
+  <h2>{{username}}'s Reservations</h2>
+  {% include "reservation/snippet/reservation_table.html" with reservation_list=user_reservations only %}
 
 {% endblock %}

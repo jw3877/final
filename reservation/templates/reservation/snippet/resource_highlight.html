@@ -1,0 +1,22 @@
+{% if resource %}
+  <table>
+  <tr>
+    <th>Resource</th>
+    <th>Owner</th> 
+    <th>E-mail</th> 
+    <th>Start Time</th>
+    <th>End Time</th>
+  </tr>
+   <tr>
+    <td><a href="{% url 'resource' resource.id %}">{{ resource.name }}</a></td>
+    <td><a href="{% url 'user' resource.owner.username %}">{{resource.owner.username}}</a></td>
+    <td>{{resource.owner.email}}</td>
+    <td>{{resource.start_time}}</td>
+    <td>{{resource.end_time}}</td>
+  </tr>
+  </table>
+
+{% else %}
+  <p>No resources are available.</p>
+{% endif %}
+

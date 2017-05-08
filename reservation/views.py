@@ -4,53 +4,66 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from django.contrib.auth.models import User
-
-
-
+from .models import Resource, Reservation
+from .forms import ResourceForm, ReservationForm
+from django.db.models import Q
 
 #from django.contrib.admin import widgets
 
-from .models import Resource, Reservation
-from .forms import ResourceForm, ReservationForm
-
+#
+# index
+#
 def index(request):
-  resource_list = Resource.objects.order_by('-start_time')
-  context = {
-    'resource_list': resource_list,
-    'user_resource_list': [],
-    'user_reservation_list': []
-  }
+  all_resources = Resource.objects.order_by('-start_time')
 
   if request.user.is_authenticated:
-    user_resource_list = Resource.objects.filter(owner=request.user).order_by('start_time')
-    user_reservation_list = Reservation.objects.filter(owner=request.user).order_by('start_time')
-    context['user_resource_list'] = user_resource_list
-    context['user_reservation_list'] = user_reservation_list
+    current_time = datetime.now()
+    user_resources = Resource.objects.filter(owner=request.user).order_by('start_time')
+    user_reservations = Reservation.objects.order_by('start_time')
+
+  else:
+    user_resources = []
+    user_reservations = []
+
+  context = {
+    'all_resources': all_resources,
+    'user_resources': user_resources,
+    'user_reservations': user_reservations
+  }
 
   return render(request, 'reservation/index.html', context)
 
+#
+# user
+# 
 def user(request, username):
   user = get_object_or_404(User, username=username)
   user_reservations = Reservation.objects.filter(owner=user)
   user_resources = Resource.objects.filter(owner=user)
   context = {
-    'user_reservation_list': user_reservations,
-    'user_resource_list': user_resources,
+    'user_reservations': user_reservations,
+    'user_resources': user_resources,
     'username': username
   }
 
   return render(request, 'reservation/user.html', context)
 
+#
+# resource
+#
 def resource(request, resource_id):
   current_time = datetime.now()
-  requested_resource = get_object_or_404(Resource, pk=resource_id)
-  reservations_list = Reservation.objects.filter(resource=requested_resource)
+  resource = get_object_or_404(Resource, pk=resource_id)
+  reservation_list = Reservation.objects.filter(resource=resource)
   context = {
-    'resource': requested_resource,
-    'reservations_list': reservations_list
+    'resource': resource,
+    'reservation_list': reservation_list
   }
   return render(request, 'reservation/resource.html', context)
 
+#
+# reservation
+#
 def reservation(request, reservation_id):
   requested_reservation = get_object_or_404(Reservation, pk=reservation_id)
   context = {
@@ -58,7 +71,9 @@ def reservation(request, reservation_id):
   }
   return render(request, 'reservation/reservation.html', context)
 
-
+#
+# createResource
+#
 @login_required
 def createResource(request):
   if request.method == 'POST':
@@ -74,6 +89,9 @@ def createResource(request):
 
   return render(request, 'reservation/createResource.html', {'resource_form': resource_form})
 
+#
+# createReservation
+#
 @login_required
 def createReservation(request, resource_id):
   resource = get_object_or_404(Resource, pk=resource_id)
@@ -97,6 +115,9 @@ def createReservation(request, resource_id):
 
   return render(request, 'reservation/createReservation.html', context)
 
+#
+# editResource
+#
 @login_required
 def editResource(request, resource_id):
   resource = get_object_or_404(Resource, pk=resource_id)

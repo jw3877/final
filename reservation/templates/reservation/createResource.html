@@ -10,7 +10,7 @@
 <form action="{% url 'createResource' %}" method="post">
 {% csrf_token %}
 {{ resource_form.as_p }}
-<input type="submit" value="Add Resource" />
+<input type="submit" value="Create Resource" />
 </form>
 {% endif %}
 <!-- End Form -->
