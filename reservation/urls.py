@@ -22,6 +22,9 @@ urlpatterns = [
     # ex: /reservation/5/
     url(r'^reservation/(?P<reservation_id>[0-9]+)/$', views.reservation, name='reservation'),
 
+    # ex: /reservation/5/delete/
+    url(r'^reservation/(?P<reservation_id>[0-9]+)/delete/$', views.deleteReservation, name='deleteReservation'),
+
     # ex: /user/name/
     url(r'^user/(?P<username>[A-Za-z0-9]+)/$', views.user, name='user'),\
 

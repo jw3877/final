@@ -1,22 +1,9 @@
 {% extends "base_generic.html" %}
 {% block content %}
 <h1> Reservation </h1>
-
-<table>
-  <tr>
-    <th>Resource</th>
-    <th>Reserved By</th> 
-    <th>E-mail</th> 
-    <th>Start Time</th>
-    <th>Duration (Minutes)</th>
-  </tr>
-  <tr>
-    <td><a href="{% url 'resource' reservation.resource.id %}">{{ reservation.resource.name }}</a></td>
-    <td><a href="{% url 'user' reservation.owner.username %}">{{reservation.owner.username}}</a></td>
-    <td>{{reservation.resource.owner.email}}</td>
-    <td>{{reservation.start_time}}</td>
-    <td>{{reservation.duration}}</td>
-  </tr>
-  </table>
+{% if reservation.owner == user %}
+(<a href="{% url 'deleteReservation' reservation.id %}">Delete</a>)
+{% endif %}
+{% include "reservation/snippet/reservation_highlight.html" %}
 
 {% endblock %}

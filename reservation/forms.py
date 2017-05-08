@@ -1,6 +1,5 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, extras, Form
 from .models import Resource, Reservation
-from django.forms import extras
 
 
 

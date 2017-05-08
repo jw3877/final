@@ -65,9 +65,9 @@ def resource(request, resource_id):
 # reservation
 #
 def reservation(request, reservation_id):
-  requested_reservation = get_object_or_404(Reservation, pk=reservation_id)
+  reservation = get_object_or_404(Reservation, pk=reservation_id)
   context = {
-    'reservation': requested_reservation
+    'reservation': reservation
   }
   return render(request, 'reservation/reservation.html', context)
 
@@ -114,6 +114,23 @@ def createReservation(request, resource_id):
   }
 
   return render(request, 'reservation/createReservation.html', context)
+
+#
+# deleteReservation
+#
+@login_required
+def deleteReservation(request, reservation_id):
+  reservation = get_object_or_404(Reservation, pk=reservation_id)
+  
+  if request.method == 'POST':
+    reservation.delete()
+    return redirect('index')
+
+  context = {
+    'reservation': reservation
+  }
+
+  return render(request, 'reservation/confirmDeleteReservation.html', context)
 
 #
 # editResource

@@ -1,4 +1,4 @@
-{% if reservation_list %}
+{% if reservation %}
 
 <table>
   <tr>
@@ -7,19 +7,14 @@
     <th>E-mail</th> 
     <th>Start Time</th>
     <th>Duration (Minutes)</th>
-    <th>Details</th>
   </tr>
-
-  {% for reservation in reservation_list %}
-   <tr>
+  <tr>
     <td><a href="{% url 'resource' reservation.resource.id %}">{{ reservation.resource.name }}</a></td>
     <td><a href="{% url 'user' reservation.owner.username %}">{{reservation.owner.username}}</a></td>
     <td>{{reservation.resource.owner.email}}</td>
     <td>{{reservation.start_time}}</td>
     <td>{{reservation.duration}}</td>
-    <td><a href="{% url 'reservation' reservation.id %}">Link</a></td>
-    </tr>
-  {% endfor %}
+  </tr>
   </table>
   <br>
 
