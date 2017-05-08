@@ -28,6 +28,9 @@ urlpatterns = [
     # ex: /user/name/
     url(r'^user/(?P<username>[A-Za-z0-9]+)/$', views.user, name='user'),\
 
+    # ex: /register/
+    url(r'^register/$', views.createUser, name='createUser'),\
+
     # auth
     url('^', include('django.contrib.auth.urls')),
 

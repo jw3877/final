@@ -1,12 +1,14 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden, HttpResponseServerError
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from django.contrib.auth.models import User
 from .models import Resource, Reservation
-from .forms import ResourceForm, ReservationForm
+from .forms import ResourceForm, ReservationForm, UserForm
 from django.db.models import Q
+from django.contrib.auth import authenticate, login
+
 
 #from django.contrib.admin import widgets
 
@@ -19,7 +21,7 @@ def index(request):
   if request.user.is_authenticated:
     current_time = datetime.now()
     user_resources = Resource.objects.filter(owner=request.user).order_by('start_time')
-    user_reservations = Reservation.objects.order_by('start_time')
+    user_reservations = Reservation.objects.filter(owner=request.user).order_by('start_time')
 
   else:
     user_resources = []
@@ -47,6 +49,38 @@ def user(request, username):
   }
 
   return render(request, 'reservation/user.html', context)
+
+#
+# createUser
+#
+def createUser(request):
+  if request.user.is_authenticated:
+      return HttpResponseRedirect(reverse('index'))
+
+  if request.method == 'POST':
+    registration_form = UserForm(request.POST)
+    
+    if registration_form.is_valid():
+      username = request.POST['username']
+      password = request.POST['password']
+      email = request.POST['email']
+
+      user = User.objects.create_user(username, email, password)
+
+      # login user after account is created
+      authenticated_user = authenticate(username=username, password=password)
+
+      if authenticated_user is not None:
+        login(request, authenticated_user)
+        return HttpResponseRedirect(reverse('index'))
+
+      else:
+        return HttpResponseServerError()  
+    
+  else:
+    registration_form = UserForm()
+
+  return render(request, 'reservation/createUser.html', {'registration_form': registration_form})
 
 #
 # resource
@@ -79,7 +113,7 @@ def createResource(request):
   if request.method == 'POST':
     resource_form = ResourceForm(request.POST)
     if resource_form.is_valid():
-      new_resource = f.save(commit=False)
+      new_resource = resource_form.save(commit=False)
       new_resource.owner = request.user
       new_resource.save()
       return HttpResponseRedirect(reverse('index'))
@@ -121,6 +155,9 @@ def createReservation(request, resource_id):
 @login_required
 def deleteReservation(request, reservation_id):
   reservation = get_object_or_404(Reservation, pk=reservation_id)
+  
+  if reservation.owner != request.user:
+    return HttpResponseForbidden()
   
   if request.method == 'POST':
     reservation.delete()

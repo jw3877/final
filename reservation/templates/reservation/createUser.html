@@ -1,0 +1,18 @@
+{% extends "base_generic.html" %}
+{% block content %}
+
+  <h1>Create new account</h1>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<!-- Begin Form -->
+{% if registration_form %}
+<form action="{% url 'createUser' %}" method="post">
+{% csrf_token %}
+{{ registration_form.as_p }}
+<input type="submit" value="Create Account" />
+</form>
+{% endif %}
+<!-- End Form -->
+  
+{% endblock %}
