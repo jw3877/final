@@ -14,7 +14,7 @@
    <tr>
     <td><a href="{% url 'resource' reservation.resource.id %}">{{ reservation.resource.name }}</a></td>
     <td><a href="{% url 'user' reservation.owner.username %}">{{reservation.owner.username}}</a></td>
-    <td>{{reservation.resource.owner.email}}</td>
+    <td>{{reservation.owner.email}}</td>
     <td>{{reservation.start_time}}</td>
     <td>{{reservation.duration}}</td>
     <td><a href="{% url 'reservation' reservation.id %}">Link</a></td>
