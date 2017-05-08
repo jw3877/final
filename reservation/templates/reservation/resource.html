@@ -1,17 +1,31 @@
 {% extends "base_generic.html" %}
 {% block content %}
-<h1> {{resource.name}} </h1>
-owner: {{resource.owner.username}} ({{resource.owner.email}})
-<br>
-start time: {{resource.start_time}}
-<br>
-end time: {{resource.end_time}}
-<br>
+<h1>Resource:</h1>
 {% if resource.owner == user %}
 (<a href="{% url 'editResource' resource.id %}">Edit</a>)
 {% endif %}
 
+<table>
+  <tr>
+    <th>Resource</th>
+    <th>Owner</th> 
+    <th>E-mail</th> 
+    <th>Start Time</th>
+    <th>End Time</th>
+  </tr>
+  <tr>
+    <td>{{resource.name}}</td>
+    <td><a href="{% url 'user' resource.owner.username %}">{{resource.owner.username}}</a></td>
+    <td>{{resource.owner.email}}</td>
+    <td>{{resource.start_time}}</td>
+    <td>{{resource.end_time}}</td>
+  </tr>
+  </table>
+<br>
+
 <h1>Reservations:</h1>
+
+<a href="{% url 'createReservation' resource.id %}">Create Reservation</a>
 <br>
 {% if reservations_list %}
 <table>
@@ -20,10 +34,11 @@ end time: {{resource.end_time}}
     <th>E-mail</th> 
     <th>Start Time</th>
     <th>Duration (Minutes)</th>
-    <th>Link</th>
+    <th>Details</th>
   </tr>
   {% for reservation in reservations_list %}
-    <tr><td> {{ reservation.owner.username }} </td>
+    <tr>
+    <td><a href="{% url 'user' reservation.owner.username %}">{{reservation.owner.username}}</a></td>
     <td> {{ reservation.owner.email }} </td>
     <td> {{ reservation.start_time }} </td>   
     <td> {{ reservation.duration }} </td>
@@ -36,6 +51,6 @@ end time: {{resource.end_time}}
     <p>No reservations.</p>
 {% endif %}
 
-<a href="{% url 'createReservation' resource.id %}">Create Reservation</a>
+
 
 {% endblock %}

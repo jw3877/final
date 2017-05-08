@@ -7,11 +7,17 @@
 
 table { 
     border: 1px solid black;
-    border-spacing: 10px;
-    border-collapse: separate;
+    width:650px;
+
 }
 
 td, th{
 text-align: center;
+  padding: 12px;
+}
+
+th {
+    background-color: #4CAF50;
+    color: white;
 }
 

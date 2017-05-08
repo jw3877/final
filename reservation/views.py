@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
+from django.contrib.auth.models import User
 
 
 
@@ -16,14 +17,29 @@ def index(request):
   resource_list = Resource.objects.order_by('-start_time')
   context = {
     'resource_list': resource_list,
-    'user_resource_list': []
+    'user_resource_list': [],
+    'user_reservation_list': []
   }
 
   if request.user.is_authenticated:
     user_resource_list = Resource.objects.filter(owner=request.user).order_by('start_time')
+    user_reservation_list = Reservation.objects.filter(owner=request.user).order_by('start_time')
     context['user_resource_list'] = user_resource_list
+    context['user_reservation_list'] = user_reservation_list
 
   return render(request, 'reservation/index.html', context)
+
+def user(request, username):
+  user = get_object_or_404(User, username=username)
+  user_reservations = Reservation.objects.filter(owner=user)
+  user_resources = Resource.objects.filter(owner=user)
+  context = {
+    'user_reservation_list': user_reservations,
+    'user_resource_list': user_resources,
+    'username': username
+  }
+
+  return render(request, 'reservation/user.html', context)
 
 def resource(request, resource_id):
   current_time = datetime.now()

@@ -1,26 +1,19 @@
 <!-- landing page -->
 {% extends "base_generic.html" %}
 {% block content %}
-
+<br>
 Welcome to OpenResource!
+<br><br>
 <!-- reservations made for resources by that user, sorted by reservation time -->
-
-<!-- resources that the user owns, each linked to its URL -->
-{% if user_resource_list %}
-  <h1>My Resources</h1>
-  <ul>
-  {% for resource in user_resource_list %}
-    <li><a href="{% url 'resource' resource.id %}">{{ resource.name }}</a></li>
-  {% endfor %}
-  </ul>
-
+{% if user.is_authenticated %}
+  {% include "reservation/user_resources_reservations.html" %}
 {% endif %}
 
 <br>
 
 <!-- all resources in the system, shown in reverse time order based on last made reservation -->
 {% if resource_list %}
-  <h1>All Resources</h1>
+  <h2>All Resources</h2>
   <ul>
   {% for resource in resource_list %}
     <li><a href="{% url 'resource' resource.id %}">{{ resource.name }}</a></li>
