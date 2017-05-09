@@ -8,6 +8,8 @@ from .models import Resource, Reservation, Tag
 from .forms import ResourceForm, ReservationForm, UserForm, ResourceTagForm
 from django.db.models import Q
 from django.contrib.auth import authenticate, login
+from django.utils import timezone
+
 
 
 #from django.contrib.admin import widgets
@@ -36,9 +38,15 @@ def index(request):
   all_resources = Resource.objects.order_by('-start_time')
 
   if request.user.is_authenticated:
-    current_time = datetime.now()
+    current_time = timezone.now()
     user_resources = Resource.objects.filter(owner=request.user).order_by('start_time')
-    user_reservations = Reservation.objects.filter(owner=request.user).order_by('start_time')
+    user_reservations = Reservation.objects.filter(owner=request.user, start_time__gte=current_time).order_by('start_time')
+
+    #user_resources = []
+    #for reservation in user_reservations:
+      #if reservation.resource not in user_resources:
+        #user_resources.append(reservation.resource)
+    
 
   else:
     user_resources = []
@@ -47,7 +55,8 @@ def index(request):
   context = {
     'all_resources': all_resources,
     'user_resources': user_resources,
-    'user_reservations': user_reservations
+    'user_reservations': user_reservations,
+    'current_time': current_time
   }
 
   return render(request, 'reservation/index.html', context)

@@ -2,6 +2,9 @@
 {% extends "base_generic.html" %}
 {% block content %}
 
+current time is: {{current_time}}
+<br>
+
 <!-- reservations made for resources by that user, sorted by reservation time -->
 {% if user.is_authenticated %}
   <h2>My Reservations</h2>

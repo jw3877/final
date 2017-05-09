@@ -25,4 +25,4 @@ class UserForm(ModelForm):
     }
 
 class ResourceTagForm(ResourceForm):
-  tags = forms.CharField(label='Tags', max_length=100)
+  tags = forms.CharField(label='Tags', max_length=100, required=False)

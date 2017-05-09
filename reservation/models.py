@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+#
+# Resource
+#
 class Resource(models.Model):
   # name of the resource
   name = models.CharField(max_length=200)
@@ -15,6 +18,9 @@ class Resource(models.Model):
   def __str__(self):
     return self.name
 
+#
+# Reservation
+#
 class Reservation(models.Model):
   # reservation hours (will be any two times within the same day, e.g. 9am - 5pm)
   start_time = models.DateTimeField('reservation start time')
@@ -29,9 +35,11 @@ class Reservation(models.Model):
   def __str__(self):
     return self.resource
 
-# set of tags that describe the type of resource
+#
+# Tag
+#
 class Tag(models.Model):
-  name = models.CharField(max_length=200)
+  name = models.CharField(max_length=200, unique=True)
   resources = models.ManyToManyField(Resource)
 
   def __str__(self):

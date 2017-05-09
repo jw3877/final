@@ -1,0 +1,9 @@
+The following packages may be required for local testing on Fedora:
+
+mysql-server
+community-mysql-devel
+redhat-rpm-config
+libpqxx-devel
+python3-mysql
+
+
