@@ -23,3 +23,6 @@ class UserForm(ModelForm):
     widgets = { 
       'password': forms.PasswordInput(),
     }
+
+class ResourceTagForm(ResourceForm):
+  tags = forms.CharField(label='Tags', max_length=100)

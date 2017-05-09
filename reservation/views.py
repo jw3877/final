@@ -4,13 +4,30 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from django.contrib.auth.models import User
-from .models import Resource, Reservation
-from .forms import ResourceForm, ReservationForm, UserForm
+from .models import Resource, Reservation, Tag
+from .forms import ResourceForm, ReservationForm, UserForm, ResourceTagForm
 from django.db.models import Q
 from django.contrib.auth import authenticate, login
 
 
 #from django.contrib.admin import widgets
+
+def addResourceTags(tags, resource):
+  tagNameList = tags.split()
+  
+  for tagName in tagNameList:
+    # check if tag already exists
+    if Tag.objects.filter(name=tagName).exists():
+      existing_tags = Tag.objects.filter(name=tagName)
+      for tag in existing_tags:
+        tag.resources.add(resource)
+
+    # tag doesn't already exist
+    else:
+      new_tag = Tag(name=tagName)
+      new_tag.save()
+      new_tag.resources.add(resource)
+    
 
 #
 # index
@@ -49,6 +66,19 @@ def user(request, username):
   }
 
   return render(request, 'reservation/user.html', context)
+
+#
+# tag
+# 
+def tag(request, tagname):
+  tag = get_object_or_404(Tag, name=tagname)
+  resource_list = tag.resources.all()
+  context = {
+    'resource_list': resource_list,
+    'tagName': tag.name 
+  }
+
+  return render(request, 'reservation/tag.html', context)
 
 #
 # createUser
@@ -90,10 +120,12 @@ def resource(request, resource_id):
   resource = get_object_or_404(Resource, pk=resource_id)
   reservation_list = Reservation.objects.filter(resource=resource)
   total_reservations = reservation_list.count()
+  tags = resource.tag_set.all()
   context = {
     'resource': resource,
     'reservation_list': reservation_list,
-    'total_reservations': total_reservations
+    'total_reservations': total_reservations,
+    'tags': tags
   }
   return render(request, 'reservation/resource.html', context)
 
@@ -113,15 +145,17 @@ def reservation(request, reservation_id):
 @login_required
 def createResource(request):
   if request.method == 'POST':
-    resource_form = ResourceForm(request.POST)
+    resource_form = ResourceTagForm(request.POST)
     if resource_form.is_valid():
       new_resource = resource_form.save(commit=False)
       new_resource.owner = request.user
+      tags = resource_form.cleaned_data['tags']
       new_resource.save()
+      addResourceTags(tags, new_resource)
       return HttpResponseRedirect(reverse('index'))
     
   else:
-    resource_form = ResourceForm()
+    resource_form = ResourceTagForm()
 
   return render(request, 'reservation/createResource.html', {'resource_form': resource_form})
 

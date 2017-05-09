@@ -26,10 +26,13 @@ urlpatterns = [
     url(r'^reservation/(?P<reservation_id>[0-9]+)/delete/$', views.deleteReservation, name='deleteReservation'),
 
     # ex: /user/name/
-    url(r'^user/(?P<username>[A-Za-z0-9]+)/$', views.user, name='user'),\
+    url(r'^user/(?P<username>[A-Za-z0-9]+)/$', views.user, name='user'),
+
+    # ex: /tag/name/
+    url(r'^tag/(?P<tagname>[A-Za-z0-9]+)/$', views.tag, name='tag'),
 
     # ex: /register/
-    url(r'^register/$', views.createUser, name='createUser'),\
+    url(r'^register/$', views.createUser, name='createUser'),
 
     # auth
     url('^', include('django.contrib.auth.urls')),
