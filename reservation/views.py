@@ -89,9 +89,11 @@ def resource(request, resource_id):
   current_time = datetime.now()
   resource = get_object_or_404(Resource, pk=resource_id)
   reservation_list = Reservation.objects.filter(resource=resource)
+  total_reservations = reservation_list.count()
   context = {
     'resource': resource,
-    'reservation_list': reservation_list
+    'reservation_list': reservation_list,
+    'total_reservations': total_reservations
   }
   return render(request, 'reservation/resource.html', context)
 

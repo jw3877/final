@@ -16,7 +16,10 @@ You are creating a reservation for the following resource:
 {{ reservation_form.as_p }}
 <input type="submit" value="Create Reservation" />
 </form>
+<br>
+{% include "reservation/snippet/datetime_format.html" %}
 {% endif %}
 <!-- End Form -->
+
   
 {% endblock %}
