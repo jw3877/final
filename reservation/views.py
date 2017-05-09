@@ -1,35 +1,16 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden, HttpResponseServerError
 from django.urls import reverse
+
 from django.contrib.auth.decorators import login_required
-from datetime import datetime
 from django.contrib.auth.models import User
-from .models import Resource, Reservation, Tag
-from .forms import ResourceForm, ReservationForm, UserForm, ResourceTagForm
-from django.db.models import Q
 from django.contrib.auth import authenticate, login
-from django.utils import timezone
 
+from .models import Resource, Reservation, Tag
+from .viewhelper import get_user_reservations, get_resource_reservations, add_resource_tags
+from .forms import ResourceForm, ReservationForm, UserForm, ResourceTagForm, ReservationDurationForm
 
-
-#from django.contrib.admin import widgets
-
-def addResourceTags(tags, resource):
-  tagNameList = tags.split()
-  
-  for tagName in tagNameList:
-    # check if tag already exists
-    if Tag.objects.filter(name=tagName).exists():
-      existing_tags = Tag.objects.filter(name=tagName)
-      for tag in existing_tags:
-        tag.resources.add(resource)
-
-    # tag doesn't already exist
-    else:
-      new_tag = Tag(name=tagName)
-      new_tag.save()
-      new_tag.resources.add(resource)
-    
+from datetime import datetime, timedelta
 
 #
 # index
@@ -38,9 +19,8 @@ def index(request):
   all_resources = Resource.objects.order_by('-start_time')
 
   if request.user.is_authenticated:
-    current_time = timezone.now()
     user_resources = Resource.objects.filter(owner=request.user).order_by('start_time')
-    user_reservations = Reservation.objects.filter(owner=request.user, start_time__gte=current_time).order_by('start_time')
+    user_reservations = get_user_reservations(request.user)
 
     #user_resources = []
     #for reservation in user_reservations:
@@ -55,8 +35,7 @@ def index(request):
   context = {
     'all_resources': all_resources,
     'user_resources': user_resources,
-    'user_reservations': user_reservations,
-    'current_time': current_time
+    'user_reservations': user_reservations
   }
 
   return render(request, 'reservation/index.html', context)
@@ -66,7 +45,7 @@ def index(request):
 # 
 def user(request, username):
   user = get_object_or_404(User, username=username)
-  user_reservations = Reservation.objects.filter(owner=user)
+  user_reservations = get_user_reservations(request.user)
   user_resources = Resource.objects.filter(owner=user)
   context = {
     'user_reservations': user_reservations,
@@ -127,7 +106,7 @@ def createUser(request):
 def resource(request, resource_id):
   current_time = datetime.now()
   resource = get_object_or_404(Resource, pk=resource_id)
-  reservation_list = Reservation.objects.filter(resource=resource)
+  reservation_list = get_resource_reservations(resource)
   total_reservations = reservation_list.count()
   tags = resource.tag_set.all()
   context = {
@@ -160,7 +139,7 @@ def createResource(request):
       new_resource.owner = request.user
       tags = resource_form.cleaned_data['tags']
       new_resource.save()
-      addResourceTags(tags, new_resource)
+      add_resource_tags(tags, new_resource)
       return HttpResponseRedirect(reverse('index'))
     
   else:
@@ -176,16 +155,19 @@ def createReservation(request, resource_id):
   resource = get_object_or_404(Resource, pk=resource_id)
 
   if request.method == 'POST':
-    reservation_form = ReservationForm(request.POST)
+    reservation_form = ReservationDurationForm(request.POST)
     if reservation_form.is_valid():
       new_reservation = reservation_form.save(commit=False)
       new_reservation.resource = resource
       new_reservation.owner = request.user
+      form_duration = reservation_form.cleaned_data['duration']
+      duration = timedelta(minutes=form_duration)
+      new_reservation.end_time = reservation_form.cleaned_data['start_time'] + duration
       new_reservation.save()
       return HttpResponseRedirect(reverse('index'))
 
   else:
-    reservation_form = ReservationForm()
+    reservation_form = ReservationDurationForm()
     
   context = {
     'reservation_form': reservation_form,

@@ -6,6 +6,7 @@
     <th>Reserved By</th> 
     <th>E-mail</th> 
     <th>Start Time</th>
+    <th>End Time</th>
     <th>Duration (Minutes)</th>
   </tr>
   <tr>
@@ -13,6 +14,7 @@
     <td><a href="{% url 'user' reservation.owner.username %}">{{reservation.owner.username}}</a></td>
     <td>{{reservation.owner.email}}</td>
     <td>{{reservation.start_time}}</td>
+    <td>{{reservation.end_time}}</td>
     <td>{{reservation.duration}}</td>
   </tr>
   </table>

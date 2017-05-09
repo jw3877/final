@@ -14,7 +14,7 @@ class ResourceForm(ModelForm):
 class ReservationForm(ModelForm):
   class Meta:
     model = Reservation
-    fields = ['start_time', 'duration']
+    fields = ['start_time']
 
 class UserForm(ModelForm):
   class Meta:
@@ -26,3 +26,6 @@ class UserForm(ModelForm):
 
 class ResourceTagForm(ResourceForm):
   tags = forms.CharField(label='Tags', max_length=100, required=False)
+
+class ReservationDurationForm(ReservationForm):
+  duration = forms.IntegerField()
