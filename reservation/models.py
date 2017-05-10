@@ -43,7 +43,7 @@ class Reservation(models.Model):
 # Tag
 #
 class Tag(models.Model):
-  name = models.CharField(max_length=200, unique=True)
+  name = models.CharField(max_length=100, unique=True)
   resources = models.ManyToManyField(Resource)
 
   def __str__(self):
