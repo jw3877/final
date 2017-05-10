@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 
 from .models import Resource, Reservation, Tag
-from .viewhelper import get_user_reservations, get_resource_reservations, add_resource_tags
+from .viewhelper import get_user_reservations, get_resource_reservations, add_resource_tags, reservation_conflict
 from .forms import ResourceForm, ReservationForm, UserForm, ResourceTagForm, ReservationDurationForm
 
 from datetime import datetime, timedelta
@@ -154,8 +154,10 @@ def createResource(request):
 def createReservation(request, resource_id):
   resource = get_object_or_404(Resource, pk=resource_id)
 
+  # POST
   if request.method == 'POST':
     reservation_form = ReservationDurationForm(request.POST)
+    # form is valid
     if reservation_form.is_valid():
       new_reservation = reservation_form.save(commit=False)
       new_reservation.resource = resource
@@ -163,9 +165,21 @@ def createReservation(request, resource_id):
       form_duration = reservation_form.cleaned_data['duration']
       duration = timedelta(minutes=form_duration)
       new_reservation.end_time = reservation_form.cleaned_data['start_time'] + duration
-      new_reservation.save()
-      return HttpResponseRedirect(reverse('index'))
+       
+      # check for reservation conflict
+      existing_reservations = Reservation.objects.filter(resource=resource)
+      val_error = reservation_conflict(new_reservation, existing_reservations)
+     
+      # form is valid but reservation conflict
+      if val_error is not None:
+        reservation_form.add_error(None, val_error)
+     
+      # form is valid -- no conflict
+      else:
+        new_reservation.save()
+        return HttpResponseRedirect(reverse('index'))
 
+  # GET
   else:
     reservation_form = ReservationDurationForm()
     

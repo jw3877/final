@@ -5,28 +5,20 @@ from django import forms
 from .validators import validate_duration
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
+from datetime import timedelta
 
 
-
-
+#
+# ResourceForm
+#
 class ResourceForm(ModelForm):
   class Meta:
     model = Resource
     fields = ['name', 'start_time', 'end_time']
 
-class ReservationForm(ModelForm):
-  class Meta:
-    model = Reservation
-    fields = ['start_time']
-
-class UserForm(ModelForm):
-  class Meta:
-    model = User
-    fields = ['username', 'email', 'password']
-    widgets = { 
-      'password': forms.PasswordInput(),
-    }
-
+#
+# ResourceTagForm
+#
 class ResourceTagForm(ResourceForm):
   tags = forms.CharField(label='Tags', max_length=500, required=False)
 
@@ -44,6 +36,28 @@ class ResourceTagForm(ResourceForm):
         
     return cleaned_data
 
+#
+# ReservationForm
+#
+class ReservationForm(ModelForm):
+  class Meta:
+    model = Reservation
+    fields = ['start_time']
+
+#
+# ReservationDurationForm
+#
 class ReservationDurationForm(ReservationForm):
   duration = forms.IntegerField(validators=[validate_duration],
-    error_messages={'invalid':'Enter a valid duration.'})
+    error_messages={'invalid':'Enter a valid duration in minutes.'})
+
+#
+# UserForm
+#
+class UserForm(ModelForm):
+  class Meta:
+    model = User
+    fields = ['username', 'email', 'password']
+    widgets = { 
+      'password': forms.PasswordInput(),
+    }
