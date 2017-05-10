@@ -34,24 +34,24 @@ def reservation_conflict(new_reservation, reservation_list):
 
   resource = new_reservation.resource
 
+  # error: start time not in available resource window
+  if start_time < resource.start_time or start_time > resource.end_time:
+    return ValidationError(
+      _('Start time outside resource availability window.'),
+      code='invalid'
+    )
+
+  # error: end time not in available resource window
+  # <= : reservation must be at least 1 minute
+  if end_time <= resource.start_time or end_time > resource.end_time:
+    return ValidationError(
+      _('End time outside resource availability window.'),
+      code='invalid'
+    )
+
   for reservation in reservation_list:
     existing_start_time = reservation.start_time
     existing_end_time = reservation.end_time
-
-    # error: start time not in available resource window
-    if start_time < resource.start_time or start_time > resource.end_time:
-      return ValidationError(
-        _('Start time outside resource availability window.'),
-        code='invalid'
-      )
-
-    # error: end time not in available resource window
-    # <= : reservation must be at least 1 minute
-    if end_time <= resource.start_time or end_time > resource.end_time:
-      return ValidationError(
-        _('End time outside resource availability window.'),
-        code='invalid'
-      )
     
     # error: start time appears in existing reservation slot
     if start_time >= existing_start_time and start_time <= existing_end_time:

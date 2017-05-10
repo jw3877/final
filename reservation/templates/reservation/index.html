@@ -5,7 +5,7 @@
 <!-- reservations made for resources by that user, sorted by reservation time -->
 {% if user.is_authenticated %}
   <h2>My Reservations</h2>
-  {% include "reservation/snippet/reservation_table.html" with reservation_list=user_reservations only %}
+  {% include "reservation/snippet/reservation_table.html" with reservation_list=user_reservations %}
 {% endif %}
 
 <!-- resources that the user owns, each linked to its URL -->

@@ -9,6 +9,7 @@
     <th>End Time</th>
     <th>Duration (Minutes)</th>
     <th>Details</th>
+    <th>Delete</th>
   </tr>
 
   {% for reservation in reservation_list %}
@@ -20,6 +21,13 @@
     <td>{{reservation.end_time}}</td>
     <td>{{reservation.duration}}</td>
     <td><a href="{% url 'reservation' reservation.id %}">Link</a></td>
+    <td>
+    {% if reservation.owner == user %}
+      <a href="{% url 'deleteReservation' reservation.id %}">Delete</a>
+    {% else %}
+      -
+    {% endif %}
+    </td>
     </tr>
   {% endfor %}
   </table>
