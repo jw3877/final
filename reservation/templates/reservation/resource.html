@@ -8,7 +8,9 @@
 <br>
 
 <h2>Reservations for this Resource:</h2>
-(<a href="{% url 'createReservation' resource.id %}">Create</a>)
+  {% if not resource.expired %}
+  (<a href="{% url 'createReservation' resource.id %}">Create</a>)
+  {% endif %}
   {% include "reservation/snippet/reservation_table.html" %}
 
 <br>

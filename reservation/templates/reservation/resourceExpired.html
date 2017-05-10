@@ -1,0 +1,11 @@
+{% extends "base_generic.html" %}
+{% block content %}
+<h1> The following resource has expired: </h1>
+{% include "reservation/snippet/resource_highlight.html" %}
+
+<br>
+<h3>Reservations are no longer being scheduled for this resource.</h3>
+<br>
+Return to <a href="{% url 'resource' resource.id %}">resource details</a> page.
+
+{% endblock %}

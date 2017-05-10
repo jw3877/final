@@ -12,6 +12,7 @@ from .forms import ResourceForm, ReservationForm, UserForm, ResourceTagForm, Res
 
 from datetime import datetime, timedelta
 
+
 #
 # index
 #
@@ -153,6 +154,11 @@ def createResource(request):
 @login_required
 def createReservation(request, resource_id):
   resource = get_object_or_404(Resource, pk=resource_id)
+
+
+  # error: resource has expired
+  if resource.expired():
+    return render(request, 'reservation/resourceExpired.html', {'resource': resource})
 
   # POST
   if request.method == 'POST':

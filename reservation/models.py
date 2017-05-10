@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 #
 # Resource
@@ -17,6 +18,9 @@ class Resource(models.Model):
 
   def __str__(self):
     return self.name
+
+  def expired(self):
+    return self.end_time <= timezone.now()
 
 #
 # Reservation
