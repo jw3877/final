@@ -6,6 +6,7 @@ from .validators import validate_duration
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from datetime import timedelta
+from django.utils import timezone
 
 
 #
@@ -27,7 +28,17 @@ class ResourceTagForm(ResourceForm):
     start_time = cleaned_data.get("start_time")
     end_time = cleaned_data.get("end_time")
 
+    recent_time = timezone.now() - timedelta(minutes=1)
+    
     if start_time and end_time:
+      # start time must be within 1 minute of current time
+      if start_time < recent_time:
+        raise ValidationError(
+          _('Start time cannot be in the past.'),
+          code='invalid'
+        )
+
+      # end time must come after start time
       if start_time >= end_time:
         raise ValidationError(
           _('Start time must come before end time.'),
