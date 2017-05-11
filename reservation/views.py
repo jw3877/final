@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login
 
 from .models import Resource, Reservation, Tag
 from .viewhelper import get_user_reservations, get_resource_reservations, add_resource_tags, reservation_conflict
-from .forms import ResourceForm, ReservationForm, UserForm, ResourceTagForm, ReservationDurationForm
+from .forms import ResourceForm, ReservationForm, UserForm, ResourceTagForm, ReservationDurationForm, SearchForm
 
 from datetime import datetime, timedelta
 
@@ -238,5 +238,31 @@ def editResource(request, resource_id):
   }
 
   return render(request, 'reservation/editResource.html', context)
+ 
+#
+# search
+#
+def search(request):
+  results_list = []
   
+  # GET
+  if request.method == 'GET':
+    search_form = SearchForm(request.GET)
+  
+    if search_form.is_valid():
+      name = search_form.cleaned_data['name']
+
+      if name:
+        results_list.extend(Resource.objects.filter(name__contains=name))
+ 
+  # POST
+  else:
+    search_form = SearchForm()
+  
+  context = {
+    'search_form': search_form,
+    'results_list': results_list
+  }
+
+  return render(request, 'reservation/search.html', context)
 

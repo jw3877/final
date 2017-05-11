@@ -77,4 +77,4 @@ class UserForm(ModelForm):
 # SearchForm
 #
 class SearchForm(Form):
-  name = forms.CharField(label='Name', max_length=500)
+  name = forms.CharField(label='Name Contains', max_length=500, required=False)

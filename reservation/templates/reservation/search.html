@@ -7,11 +7,17 @@
 
 <!-- Begin Form -->
 {% if search_form %}
-<form action="{% url 'search' resource.id %}" method="post">
-{% csrf_token %}
+<form action="{% url 'search' %}" method="get">
 {{ search_form.as_p }}
 <input type="submit" value="Search" />
 </form>
+{% if results_list %}
+<h2>Search Results</h2>
+  {% for resource in results_list %}
+    {% include "reservation/snippet/resource_highlight.html" %}
+  {% endfor %}
+{% endif %}
+
 <br>
 {% include "reservation/snippet/datetime_format.html" %}
 {% endif %}
