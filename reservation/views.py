@@ -47,7 +47,7 @@ def index(request):
 # 
 def user(request, username):
   user = get_object_or_404(User, username=username)
-  user_reservations = get_user_reservations(request.user)
+  user_reservations = get_user_reservations(user)
   user_resources = Resource.objects.filter(owner=user)
   context = {
     'user_reservations': user_reservations,
