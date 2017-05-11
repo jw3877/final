@@ -2,6 +2,8 @@ from django.utils import timezone
 from .models import Resource, Reservation, Tag
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
+from xml.etree.ElementTree import ElementTree
+from xml.etree.ElementTree import Element, tostring
 
 def add_resource_tags(tags, resource):
   tagNameList = tags.split()
@@ -75,3 +77,4 @@ def reservation_conflict(new_reservation, reservation_list):
       )
 
   return None
+

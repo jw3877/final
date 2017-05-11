@@ -238,5 +238,5 @@ def editResource(request, resource_id):
   }
 
   return render(request, 'reservation/editResource.html', context)
-
+  
 

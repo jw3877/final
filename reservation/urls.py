@@ -1,5 +1,6 @@
 from django.conf.urls import url, include
 from django.contrib.auth import views as auth_views
+from .feed import ResourceFeed
 
 
 from . import views
@@ -18,6 +19,9 @@ urlpatterns = [
 
     # ex: /resource/5/edit/
     url(r'^resource/(?P<resource_id>[0-9]+)/edit/$', views.editResource, name='editResource'),
+
+    # ex: /resource/5/rss/
+    url(r'^resource/(?P<resource_id>[0-9]+)/rss/$', ResourceFeed(), name='rss'),
 
     # ex: /reservation/5/
     url(r'^reservation/(?P<reservation_id>[0-9]+)/$', views.reservation, name='reservation'),

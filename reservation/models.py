@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.urls import reverse
 
 #
 # Resource
@@ -18,6 +19,10 @@ class Resource(models.Model):
 
   def __str__(self):
     return self.name
+
+  def get_absolute_url(self):
+    from . import views
+    return reverse('resource', args=[str(self.id)])
 
   def expired(self):
     return self.end_time <= timezone.now()
@@ -37,7 +42,11 @@ class Reservation(models.Model):
   owner = models.ForeignKey(User)
 
   def __str__(self):
-    return self.resource
+    return "Reservation (id: {})".format(self.id)
+
+  def get_absolute_url(self):
+    from . import views
+    return reverse('reservation', args=[str(self.id)])
 
   def duration(self):
     d = self.end_time - self.start_time

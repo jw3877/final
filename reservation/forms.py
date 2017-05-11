@@ -72,3 +72,9 @@ class UserForm(ModelForm):
     widgets = { 
       'password': forms.PasswordInput(),
     }
+
+#
+# SearchForm
+#
+class SearchForm(Form):
+  name = forms.CharField(label='Name', max_length=500)

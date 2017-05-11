@@ -23,4 +23,9 @@ th {
 
 tr:nth-child(odd) {background-color: #E8E8E8}
 
+.icon {
+  height:50px;
+  width:50px;
+}
+
 

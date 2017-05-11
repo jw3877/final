@@ -1,0 +1,21 @@
+{% extends "base_generic.html" %}
+{% block content %}
+
+<h1>Search for Resource</h1>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<!-- Begin Form -->
+{% if search_form %}
+<form action="{% url 'search' resource.id %}" method="post">
+{% csrf_token %}
+{{ search_form.as_p }}
+<input type="submit" value="Search" />
+</form>
+<br>
+{% include "reservation/snippet/datetime_format.html" %}
+{% endif %}
+<!-- End Form -->
+
+  
+{% endblock %}

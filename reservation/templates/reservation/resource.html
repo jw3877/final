@@ -1,4 +1,5 @@
 {% extends "base_generic.html" %}
+{% load static %}
 {% block content %}
 <h2>Resource Details:</h2>
 {% if resource.owner == user %}
@@ -13,8 +14,10 @@
   {% endif %}
   {% include "reservation/snippet/reservation_table.html" %}
 
-<br>
 <h2>Tags</h2>
   {% include "reservation/snippet/resource_tags.html" %}
+
+<h2>RSS</h2>
+  <a href="{% url 'rss' resource.id %}"><img src="{% static 'images/feed.svg' %}" class="icon"></img></a>
 
 {% endblock %}
