@@ -78,3 +78,21 @@ class UserForm(ModelForm):
 #
 class SearchForm(Form):
   name = forms.CharField(label='Name Contains', max_length=500, required=False)
+
+  start_time = forms.DateTimeField(label='Start Time', required=False)
+
+  duration = forms.IntegerField(validators=[validate_duration],
+    error_messages={'invalid':'Enter a valid duration in minutes.'}, required=False)
+
+  def clean(self):
+    cleaned_data = super(SearchForm, self).clean()
+    start_time = cleaned_data.get("start_time")
+    duration = cleaned_data.get("duration")
+
+    if start_time and not duration or duration and not start_time:
+      raise ValidationError(
+          _('Start time and duration must be supplied together.'),
+          code='invalid'
+        )
+    
+    return cleaned_data

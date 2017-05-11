@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from xml.etree.ElementTree import ElementTree
 from xml.etree.ElementTree import Element, tostring
+from datetime import timedelta
 
 def add_resource_tags(tags, resource):
   tagNameList = tags.split()
@@ -77,4 +78,21 @@ def reservation_conflict(new_reservation, reservation_list):
       )
 
   return None
+
+def get_search_results(name, start_time, duration):
+  results_list = []
+
+  if name and start_time and duration:
+    end_time = start_time + timedelta(minutes=duration)
+    results_list = Resource.objects.filter(name__contains=name, start_time__lte=start_time, end_time__gte=end_time)
+
+  elif start_time and duration:
+    end_time = start_time + timedelta(minutes=duration)
+    results_list = Resource.objects.filter(start_time__lte=start_time, end_time__gte=end_time)
+
+  elif name:
+    results_list = Resource.objects.filter(name__contains=name)
+
+  return results_list
+
 

@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 
 from .models import Resource, Reservation, Tag
-from .viewhelper import get_user_reservations, get_resource_reservations, add_resource_tags, reservation_conflict
+from .viewhelper import get_user_reservations, get_resource_reservations, add_resource_tags, reservation_conflict, get_search_results
 from .forms import ResourceForm, ReservationForm, UserForm, ResourceTagForm, ReservationDurationForm, SearchForm
 
 from datetime import datetime, timedelta
@@ -251,9 +251,10 @@ def search(request):
   
     if search_form.is_valid():
       name = search_form.cleaned_data['name']
+      start_time = search_form.cleaned_data['start_time']
+      duration = search_form.cleaned_data['duration']
 
-      if name:
-        results_list.extend(Resource.objects.filter(name__contains=name))
+      results_list = get_search_results(name, start_time, duration)
  
   # POST
   else:
