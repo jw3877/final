@@ -62,4 +62,12 @@ class Tag(models.Model):
   def __str__(self):
     return self.name
 
+#
+# Counter
+#
+class Counter(models.Model):
+  resource = models.ForeignKey(Resource)
+  count = models.BigIntegerField(default=0)
+
+
 

@@ -6,12 +6,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 
-from .models import Resource, Reservation, Tag
+from .models import Resource, Reservation, Tag, Counter
 from .viewhelper import get_user_reservations, get_resource_reservations, add_resource_tags, reservation_conflict, get_search_results
 from .forms import ResourceForm, ReservationForm, UserForm, ResourceTagForm, ReservationDurationForm, SearchForm
 
 from datetime import datetime, timedelta
-
+from django.db.models import F
 
 #
 # index
@@ -108,7 +108,11 @@ def resource(request, resource_id):
   current_time = datetime.now()
   resource = get_object_or_404(Resource, pk=resource_id)
   reservation_list = get_resource_reservations(resource)
-  total_reservations = reservation_list.count()
+  
+  # reservation_list only contains reservations >= currrent_time
+  counter, created = Counter.objects.get_or_create(resource=resource)
+  total_reservations = counter.count
+
   tags = resource.tag_set.all()
   context = {
     'resource': resource,
@@ -183,6 +187,10 @@ def createReservation(request, resource_id):
       # form is valid -- no conflict
       else:
         new_reservation.save()
+        # update counter -- used to display total # of past reservations
+        counter, created = Counter.objects.get_or_create(resource=resource)
+        counter.count = F('count') + 1
+        counter.save()
         return HttpResponseRedirect(reverse('index'))
 
   # GET

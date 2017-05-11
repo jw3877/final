@@ -20,4 +20,7 @@
 <h2>RSS</h2>
   <a href="{% url 'rss' resource.id %}"><img src="{% static 'images/feed.svg' %}" class="icon"></img></a>
 
+<br><br>
+<p class="smalltext">This resource has been reserved a total number of <b>{{total_reservations}}</b> times in the past.</p>
+
 {% endblock %}
