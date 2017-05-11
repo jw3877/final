@@ -12,6 +12,7 @@ from .forms import ResourceForm, ReservationForm, UserForm, ResourceTagForm, Res
 
 from datetime import datetime, timedelta
 from django.db.models import F
+from django.contrib import messages
 
 #
 # index
@@ -145,6 +146,8 @@ def createResource(request):
       tags = resource_form.cleaned_data['tags']
       new_resource.save()
       add_resource_tags(tags, new_resource)
+      message = 'Successfully created resource.'
+      messages.add_message(request, messages.SUCCESS, message)
       return HttpResponseRedirect(reverse('index'))
     
   else:
@@ -206,6 +209,9 @@ def createReservation(request, resource_id):
            Sincerely,
            The Management'''.format(new_reservation.resource.name, new_reservation.start_time, new_reservation.end_time, new_reservation.duration())
         request.user.email_user(subject, message)
+
+        message = 'Successfully created reservation.'
+        messages.add_message(request, messages.SUCCESS, message)
         return HttpResponseRedirect(reverse('index'))
 
   # GET
@@ -231,6 +237,8 @@ def deleteReservation(request, reservation_id):
   
   if request.method == 'POST':
     reservation.delete()
+    message = 'Successfully deleted reservation.'
+    messages.add_message(request, messages.SUCCESS, message)
     return redirect('index')
 
   context = {
@@ -250,6 +258,8 @@ def editResource(request, resource_id):
     resource_form = ResourceForm(request.POST, request.FILES, instance=resource)
     if resource_form.is_valid():
       resource_form.save()
+      message = 'Changes have been saved.'
+      messages.add_message(request, messages.SUCCESS, message)
       return redirect('resource', resource.id)
 
   else:

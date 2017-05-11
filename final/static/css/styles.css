@@ -32,5 +32,17 @@ tr:nth-child(odd) {background-color: #E8E8E8}
   height:200px;
 }
 
+.success {
+  color: black;
+  background: #B8F0B8;
+  font-size: 15px;
+  text-align: center;
+  width: 720px;
+  height: 35px;
+  border-style: solid;
+  border-color: black;
+  border-width: 1px;
+}
+
 
 

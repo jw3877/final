@@ -32,10 +32,14 @@
      {% endblock %}
       </div>
       <div class="col-sm-10 ">
+        {% if messages %}
+          {% for message in messages %}
+          <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+          {% endfor %}
+         {% endif %}
       {% block content %}{% endblock %}
       </div>
     </div>
-
   </div>
 </body>
 </html>
