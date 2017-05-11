@@ -1,6 +1,7 @@
 {% extends "base_generic.html" %}
 {% load static %}
 {% block content %}
+<img src="{{resource.image.url}}"></img>
 <h2>Resource Details:</h2>
 {% if resource.owner == user %}
 (<a href="{% url 'editResource' resource.id %}">Edit</a>)
@@ -21,6 +22,6 @@
   <a href="{% url 'rss' resource.id %}"><img src="{% static 'images/feed.svg' %}" class="icon"></img></a>
 
 <br><br>
-<p class="smalltext">This resource has been reserved a total number of <b>{{total_reservations}}</b> times in the past.</p>
+<p>This resource has been reserved a total number of <b>{{total_reservations}}</b> times in the past.</p>
 
 {% endblock %}

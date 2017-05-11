@@ -7,7 +7,7 @@
 
 <!-- Begin Form -->
 {% if resource_form %}
-<form action="{% url 'editResource' resource.id %}" method="post">
+<form action="{% url 'editResource' resource.id %}" method="post" enctype="multipart/form-data">
 {% csrf_token %}
 {{ resource_form.as_p }}
 <input type="submit" value="Save Changes" />

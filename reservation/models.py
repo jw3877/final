@@ -27,6 +27,12 @@ class Resource(models.Model):
   def expired(self):
     return self.end_time <= timezone.now()
 
+  def user_directory_path(instance, filename):
+    return 'user_{0}/{1}'.format(instance.owner.id, filename)
+
+  # image associated with resource
+  image = models.ImageField(upload_to=user_directory_path, default='resource.png')
+
 #
 # Reservation
 #

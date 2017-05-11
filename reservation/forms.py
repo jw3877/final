@@ -15,7 +15,7 @@ from django.utils import timezone
 class ResourceForm(ModelForm):
   class Meta:
     model = Resource
-    fields = ['name', 'start_time', 'end_time']
+    fields = ['name', 'start_time', 'end_time', 'image']
 
 #
 # ResourceTagForm

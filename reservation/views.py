@@ -138,7 +138,7 @@ def reservation(request, reservation_id):
 @login_required
 def createResource(request):
   if request.method == 'POST':
-    resource_form = ResourceTagForm(request.POST)
+    resource_form = ResourceTagForm(request.POST, request.FILES)
     if resource_form.is_valid():
       new_resource = resource_form.save(commit=False)
       new_resource.owner = request.user
@@ -247,7 +247,7 @@ def editResource(request, resource_id):
   resource = get_object_or_404(Resource, pk=resource_id)
 
   if request.method == 'POST':
-    resource_form = ResourceForm(request.POST, instance=resource)
+    resource_form = ResourceForm(request.POST, request.FILES, instance=resource)
     if resource_form.is_valid():
       resource_form.save()
       return redirect('resource', resource.id)
