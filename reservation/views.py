@@ -182,6 +182,12 @@ def createReservation(request, resource_id):
       # check for reservation conflict
       existing_reservations = Reservation.objects.filter(resource=resource)
       val_error = reservation_conflict(new_reservation, existing_reservations)
+  
+      # if no conflicts with other reservations for this resource, check
+      # user doesn't already have something scheduled at that time slot
+      if val_error is None:
+        my_reservations = Reservation.objects.filter(owner=request.user)
+        val_error = reservation_conflict(new_reservation, my_reservations)
      
       # form is valid but reservation conflict
       if val_error is not None:
