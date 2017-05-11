@@ -1,13 +1,26 @@
 {% extends "base_generic.html" %}
 {% load static %}
 {% block content %}
-<img src="{{resource.image.url}}"></img>
+
 <h2>Resource Details:</h2>
 {% if resource.owner == user %}
 (<a href="{% url 'editResource' resource.id %}">Edit</a>)
 {% endif %}
 {% include "reservation/snippet/resource_highlight.html" %}
-<br>
+
+<table>
+<tr>
+<td><img src="{{resource.image.url}}" class="resimage"></img></td>
+<td>
+<h2>Description:</h2>
+{% if resource.description %}
+{{resource.description}}
+{% else %}
+No description provided.
+{% endif %}
+</td>
+</tr>
+</table>
 
 <h2>Reservations for this Resource:</h2>
   {% if not resource.expired %}

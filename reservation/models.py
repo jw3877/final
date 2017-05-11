@@ -17,6 +17,9 @@ class Resource(models.Model):
   start_time = models.DateTimeField('available start time')
   end_time = models.DateTimeField('availabile end time')
 
+  # max_length not enforced in db, only in Textarea widget of form field
+  description = models.TextField('description', max_length=300, blank=True)
+
   def __str__(self):
     return self.name
 

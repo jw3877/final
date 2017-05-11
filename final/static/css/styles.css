@@ -27,4 +27,10 @@ tr:nth-child(odd) {background-color: #E8E8E8}
   width:50px;
 }
 
+.resimage {
+  width:200px;
+  height:200px;
+}
+
+
 
