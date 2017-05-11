@@ -191,6 +191,21 @@ def createReservation(request, resource_id):
         counter, created = Counter.objects.get_or_create(resource=resource)
         counter.count = F('count') + 1
         counter.save()
+       
+        # e-mail user
+        subject = 'Reservation Confirmed'
+        message = '''The following reservation has been confirmed:
+
+           Resource: {0}
+           Start Time: {1}
+           End Time: {2}
+           Duration: {3} minutes
+           
+           Thank you for choosing Open Resource. We hope to see you back again soon!
+           
+           Sincerely,
+           The Management'''.format(new_reservation.resource.name, new_reservation.start_time, new_reservation.end_time, new_reservation.duration())
+        request.user.email_user(subject, message)
         return HttpResponseRedirect(reverse('index'))
 
   # GET
