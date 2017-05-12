@@ -106,7 +106,6 @@ def createUser(request):
 # resource
 #
 def resource(request, resource_id):
-  current_time = datetime.now()
   resource = get_object_or_404(Resource, pk=resource_id)
   reservation_list = get_resource_reservations(resource)
   
@@ -202,7 +201,8 @@ def createReservation(request, resource_id):
         counter.save()
        
         # e-mail user
-        subject = 'Reservation Confirmed'
+        subject = 'Reservation Confirmed on Open Resource'
+        date_format = '%A, %B %d, %Y @ %I:%M %p'
         message = '''The following reservation has been confirmed:
 
            Resource: {0}
@@ -213,7 +213,7 @@ def createReservation(request, resource_id):
            Thank you for choosing Open Resource. We hope to see you back again soon!
            
            Sincerely,
-           The Management'''.format(new_reservation.resource.name, new_reservation.start_time, new_reservation.end_time, new_reservation.duration())
+           The Management'''.format(new_reservation.resource.name, new_reservation.start_time.strftime(date_format), new_reservation.end_time.strftime(date_format), new_reservation.duration())
         request.user.email_user(subject, message)
 
         message = 'Successfully created reservation.'
