@@ -2,7 +2,7 @@
 {% block content %}
 <h1> Reservation </h1>
 {% if reservation.owner == user %}
-(<a href="{% url 'deleteReservation' reservation.id %}" class="action">Delete</a>)
+<a href="{% url 'deleteReservation' reservation.id %}" class="action">Delete</a>
 {% endif %}
 {% include "reservation/snippet/reservation_highlight.html" %}
 
