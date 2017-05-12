@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.urls import reverse
+from .validators import validate_capacity
 
 #
 # Resource
@@ -21,7 +22,7 @@ class Resource(models.Model):
   description = models.TextField('description', max_length=300, blank=True)
 
   # capacity of the resource
-  capacity = models.IntegerField(default=1)
+  capacity = models.IntegerField(default=1, validators=[validate_capacity])
 
   def __str__(self):
     return self.name

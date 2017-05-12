@@ -9,3 +9,11 @@ def validate_duration(value):
       code='invalid',
       params={'value': value},
     )
+
+def validate_capacity(value):
+  if value < 1:
+    raise ValidationError(
+      _('Invalid capacity: %(value)s'),
+      code='invalid',
+      params={'value': value},
+    )

@@ -15,8 +15,18 @@ text-align: center;
   padding: 12px;
 }
 
-th {
+table.green th {
     background-color: #4CAF50;
+    color: white;
+}
+
+table.red th {
+    background-color: #ff3333;
+    color: white;
+}
+
+table.blue th {
+    background-color: #1E90FF;
     color: white;
 }
 

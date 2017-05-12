@@ -16,7 +16,12 @@ class ResourceForm(ModelForm):
   class Meta:
     model = Resource
     fields = ['name', 'start_time', 'end_time', 'capacity', 'image', 'description']
-
+    error_messages={
+      'capacity': {
+         'invalid':'Capacity must be > 0.'
+       },
+    }
+   
 #
 # ResourceTagForm
 #
@@ -60,7 +65,7 @@ class ReservationForm(ModelForm):
 #
 class ReservationDurationForm(ReservationForm):
   duration = forms.IntegerField(validators=[validate_duration],
-    error_messages={'invalid':'Enter a valid duration in minutes.'})
+    error_messages={'invalid':'Duration must be > 0.'})
 
 #
 # UserForm
