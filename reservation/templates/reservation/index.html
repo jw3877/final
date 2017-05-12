@@ -11,6 +11,7 @@
 <!-- resources that the user owns, each linked to its URL -->
 {% if user.is_authenticated %}
   <h2>My Resources</h2>
+  <a href="{% url 'createResource' %}" class="action">Create</a>
   {% include "reservation/snippet/resource_table.html" with resource_list=user_resources only %}
 {% endif %}
 

@@ -4,7 +4,7 @@
 
 <h2>Resource Details:</h2>
 {% if resource.owner == user %}
-(<a href="{% url 'editResource' resource.id %}">Edit</a>)
+<a href="{% url 'editResource' resource.id %}" class="action">Edit</a>
 {% endif %}
 {% include "reservation/snippet/resource_highlight.html" %}
 
@@ -24,7 +24,7 @@ No description provided.
 
 <h2>Reservations for this Resource:</h2>
   {% if not resource.expired %}
-  (<a href="{% url 'createReservation' resource.id %}">Create</a>)
+  <a href="{% url 'createReservation' resource.id %}" class="action">Create</a>
   {% endif %}
   {% include "reservation/snippet/reservation_table.html" %}
 

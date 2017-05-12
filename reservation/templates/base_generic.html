@@ -24,7 +24,6 @@
           <li><a href="{% url 'index' %}">Home</a></li>
           <li><a href="{% url 'search' %}">Search</a></li>
           {% if user.is_authenticated %}
-            <li><a href="{% url 'createResource' %}">Create Resource</a></li>
             <li><a href="{% url 'logout'%}">Logout {{ user.get_username }}</a></li>   
           {% else %}
             <li><a href="{% url 'login' %}?next={{request.path}}">Login</a></li>   

@@ -54,5 +54,10 @@ tr:nth-child(odd) {background-color: #E8E8E8}
   border-width: 1px;
 }
 
+.action {
+  font-size:22px;
+  color: purple;
+}
+
 
 
