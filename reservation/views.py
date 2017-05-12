@@ -145,7 +145,7 @@ def createResource(request):
       tags = resource_form.cleaned_data['tags']
       new_resource.save()
       add_resource_tags(tags, new_resource)
-      message = 'Successfully created resource.'
+      message = 'Successfully created resource {0}.'.format(new_resource.name)
       messages.add_message(request, messages.SUCCESS, message)
       return HttpResponseRedirect(reverse('index'))
     
@@ -192,15 +192,11 @@ def createReservation(request, resource_id):
         counter, created = Counter.objects.get_or_create(resource=resource)
         counter.count = F('count') + 1
         counter.save()
-
-        # update resource capacity count
-        #resource.capacity = F('capacity') + 1
-        #resource.save()
        
         # e-mail user
         email_user_reservation_confirmed(new_reservation)
 
-        message = 'Successfully created reservation.'
+        message = 'Successfully created reservation for resource {0}.'.format(resource.name)
         messages.add_message(request, messages.SUCCESS, message)
 
         return HttpResponseRedirect(reverse('index'))
@@ -227,8 +223,9 @@ def deleteReservation(request, reservation_id):
     return HttpResponseForbidden()
   
   if request.method == 'POST':
+    resource = reservation.resource
     reservation.delete()
-    message = 'Successfully deleted reservation.'
+    message = 'Successfully deleted reservation for resource {0}.'.format(resource.name)
     messages.add_message(request, messages.SUCCESS, message)
     return redirect('index')
 
@@ -249,7 +246,7 @@ def editResource(request, resource_id):
     resource_form = ResourceForm(request.POST, request.FILES, instance=resource)
     if resource_form.is_valid():
       resource_form.save()
-      message = 'Changes have been saved.'
+      message = 'Changes to resource {0} have been saved.'.format(resource.name)
       messages.add_message(request, messages.SUCCESS, message)
       return redirect('resource', resource.id)
 

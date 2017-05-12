@@ -34,9 +34,11 @@ def get_resource_reservations(resource):
   current_time = timezone.now()
   return Reservation.objects.filter(resource=resource, end_time__gte=current_time).order_by('start_time')
 
-def reservation_conflict(new_reservation, reservation_list):
+def total_reservation_conflicts(new_reservation, reservation_list):
   start_time = new_reservation.start_time
   end_time = new_reservation.end_time
+
+  total_conflicts = 0
 
   for reservation in reservation_list:
     existing_start_time = reservation.start_time
@@ -44,41 +46,28 @@ def reservation_conflict(new_reservation, reservation_list):
     
     # error: start time appears in existing reservation slot
     if start_time >= existing_start_time and start_time <= existing_end_time:
-      return ValidationError(
-        _('Start time conflicts with existing reservation.'),
-        code='invalid'
-      )
+      total_conflicts += 1
+      continue
 
     # error: end time appears in existing reservation slot
     if end_time >= existing_start_time and end_time <= existing_end_time:
-      return ValidationError(
-        _('End time conflicts with existing reservation.'),
-        code='invalid'
-      )
+      total_conflicts += 1
+      continue
 
     # error: reservation encompasses old reservation
     if start_time < existing_start_time and end_time > existing_end_time:
-      return ValidationError(
-        _('Reservation encompasses existing reservation.'),
-        code='invalid'
-      )
+      total_conflicts += 1
+      continue
+
+  return total_conflicts
 
 def validate_reservation(new_reservation):
   start_time = new_reservation.start_time
   end_time = new_reservation.end_time
 
   resource = new_reservation.resource
-
-  '''
-  # 1. Check if resource already at max capacity.
-  if resource.at_max_capacity():
-    return ValidationError(
-      _('Resource at max capacity.'),
-      code='invalid'
-    )
-  '''
   
-  # 2. Check if reservation in resource availability window
+  # 1. Check if reservation in resource availability window
   # error: start time not in resource availability window
   if start_time < resource.start_time or start_time > resource.end_time:
     return ValidationError(
@@ -94,16 +83,26 @@ def validate_reservation(new_reservation):
       code='invalid'
     )
 
+  # 2. Check that user doesn't have another reservation that conflicts with this time slot (self-conflict)
+  user_reservations = Reservation.objects.filter(owner=new_reservation.owner)
+  self_conflicts = total_reservation_conflicts(new_reservation, user_reservations)
+  if self_conflicts > 0:
+    return ValidationError(
+      _('You have an existing reservation that conflicts with this time slot.'),
+      code='invalid'
+    )
+
   # 3. Check reservation doesn't conflict with other reservations for this resource
   existing_reservations = Reservation.objects.filter(resource=resource)
-  val_error = resource_conflict(new_reservation, existing_reservations)
-
-  # 4. Check user doesn't have a conflicting reservation with another resource
-  if val_error is None:
-    user_reservations = Reservation.objects.filter(owner=new_reservation.owner)
-    val_error = reservation_conflict(new_reservation, user_reservations)
-
-  return val_error
+  total_conflicts = total_reservation_conflicts(new_reservation, existing_reservations)
+  
+  if total_conflicts >= resource.capacity:
+    return ValidationError(
+      _('Resource is at max capacity for provided time slot.'),
+      code='invalid'
+    )
+ 
+  return None
 
 def get_search_results(name, start_time, duration):
   results_list = []
@@ -136,6 +135,6 @@ def email_user_reservation_confirmed(reservation):
            
            Sincerely,
            The Management'''.format(reservation.resource.name, reservation.start_time.strftime(date_format), reservation.end_time.strftime(date_format), reservation.duration())
-  request.user.email_user(subject, message)
+  reservation.owner.email_user(subject, message)
 
 

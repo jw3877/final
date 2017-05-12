@@ -20,6 +20,9 @@ class Resource(models.Model):
   # max_length not enforced in db, only in Textarea widget of form field
   description = models.TextField('description', max_length=300, blank=True)
 
+  # capacity of the resource
+  capacity = models.IntegerField(default=1)
+
   def __str__(self):
     return self.name
 

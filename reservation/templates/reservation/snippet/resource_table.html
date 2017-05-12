@@ -6,6 +6,7 @@
     <th>E-mail</th> 
     <th>Start Time</th>
     <th>End Time</th>
+    <th>Capacity</th>
   </tr>
 
   {% for resource in resource_list %}
@@ -15,6 +16,7 @@
     <td>{{resource.owner.email}}</td>
     <td>{{resource.start_time}}</td>
     <td>{{resource.end_time}}</td>
+    <td>{{resource.capacity}}</td>
   </tr>
   {% endfor %}
 
