@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 
 from .models import Resource, Reservation, Tag, Counter
-from .viewhelper import get_user_reservations, get_resource_reservations, add_resource_tags, reservation_conflict, get_search_results
+from .viewhelper import get_user_reservations, get_resource_reservations, add_resource_tags, validate_reservation, get_search_results, email_user_reservation_confirmed
 from .forms import ResourceForm, ReservationForm, UserForm, ResourceTagForm, ReservationDurationForm, SearchForm
 
 from datetime import datetime, timedelta
@@ -161,7 +161,6 @@ def createResource(request):
 def createReservation(request, resource_id):
   resource = get_object_or_404(Resource, pk=resource_id)
 
-
   # error: resource has expired
   if resource.expired():
     return render(request, 'reservation/resourceExpired.html', {'resource': resource})
@@ -179,14 +178,7 @@ def createReservation(request, resource_id):
       new_reservation.end_time = reservation_form.cleaned_data['start_time'] + duration
        
       # check for reservation conflict
-      existing_reservations = Reservation.objects.filter(resource=resource)
-      val_error = reservation_conflict(new_reservation, existing_reservations)
-  
-      # if no conflicts with other reservations for this resource, check
-      # user doesn't already have something scheduled at that time slot
-      if val_error is None:
-        my_reservations = Reservation.objects.filter(owner=request.user)
-        val_error = reservation_conflict(new_reservation, my_reservations)
+      val_error = validate_reservation(new_reservation)
      
       # form is valid but reservation conflict
       if val_error is not None:
@@ -195,29 +187,22 @@ def createReservation(request, resource_id):
       # form is valid -- no conflict
       else:
         new_reservation.save()
+
         # update counter -- used to display total # of past reservations
         counter, created = Counter.objects.get_or_create(resource=resource)
         counter.count = F('count') + 1
         counter.save()
+
+        # update resource capacity count
+        #resource.capacity = F('capacity') + 1
+        #resource.save()
        
         # e-mail user
-        subject = 'Reservation Confirmed on Open Resource'
-        date_format = '%A, %B %d, %Y @ %I:%M %p'
-        message = '''The following reservation has been confirmed:
-
-           Resource: {0}
-           Start Time: {1}
-           End Time: {2}
-           Duration: {3} minutes
-           
-           Thank you for choosing Open Resource. We hope to see you back again soon!
-           
-           Sincerely,
-           The Management'''.format(new_reservation.resource.name, new_reservation.start_time.strftime(date_format), new_reservation.end_time.strftime(date_format), new_reservation.duration())
-        request.user.email_user(subject, message)
+        email_user_reservation_confirmed(new_reservation)
 
         message = 'Successfully created reservation.'
         messages.add_message(request, messages.SUCCESS, message)
+
         return HttpResponseRedirect(reverse('index'))
 
   # GET
