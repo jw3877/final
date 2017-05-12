@@ -59,20 +59,21 @@ def get_conflicts(new_reservation):
       code='invalid')))
 
   # 2. Check that user doesn't have another reservation that conflicts with this time slot (self-conflict)
-  user_reservations = Reservation.objects.filter(owner=new_reservation.owner).exclude(resource=resource)
+  user_reservations = Reservation.objects.filter(owner=new_reservation.owner)
   self_conflicts_list = get_conflicting_reservations(new_reservation, user_reservations)
   if len(self_conflicts_list) > 0:
     conflict_list.append(Conflict(self_conflicts_list, ValidationError(
-      _('You have an existing reservation that conflicts with this time slot.'),
+      _('You have an existing reservation that conflicts with the requested time slot.'),
       code='invalid')))
 
   # 3. Check reservation doesn't conflict with other reservations for this resource
-  existing_reservations = Reservation.objects.filter(resource=resource)
+  existing_reservations = Reservation.objects.filter(resource=resource).exclude(owner=new_reservation.owner)
+  total_excluded_records = Reservation.objects.filter(resource=resource, owner=new_reservation.owner).count()
   resource_conflicts_list = get_conflicting_reservations(new_reservation, existing_reservations)
   
-  if len(resource_conflicts_list) >= resource.capacity:
+  if len(resource_conflicts_list) + total_excluded_records >= resource.capacity:
     conflict_list.append(Conflict(resource_conflicts_list, ValidationError(
-      _('Resource is at max capacity for provided time slot.'),
+      _('Resource is at max capacity for the requested time slot.'),
       code='invalid')))
  
   return conflict_list
