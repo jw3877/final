@@ -6,6 +6,12 @@
 You are creating a reservation for the following resource:
 {% include "reservation/snippet/resource_highlight.html" %}
 
+{% if conflicting_reservations %}
+<br>
+  The reservation that you are trying to create <b>conflicts</b> with the following reservations:
+  {% include "reservation/snippet/reservation_table.html" with reservation_list=conflicting_reservations class="red" %}
+{% endif %}
+
 <br>
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 

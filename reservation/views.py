@@ -7,8 +7,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 
 from .models import Resource, Reservation, Tag, Counter
-from .viewhelper import get_user_reservations, get_resource_reservations, add_resource_tags, validate_reservation, get_search_results, email_user_reservation_confirmed
+from .viewhelper import get_user_reservations, get_resource_reservations, add_resource_tags, get_search_results, email_user_reservation_confirmed
 from .forms import ResourceForm, ReservationForm, UserForm, ResourceTagForm, ReservationDurationForm, SearchForm
+from .conflicts import Conflict, get_conflicts
 
 from datetime import datetime, timedelta
 from django.db.models import F
@@ -160,6 +161,7 @@ def createResource(request):
 @login_required
 def createReservation(request, resource_id):
   resource = get_object_or_404(Resource, pk=resource_id)
+  conflicting_reservations = []
 
   # error: resource has expired
   if resource.expired():
@@ -178,11 +180,13 @@ def createReservation(request, resource_id):
       new_reservation.end_time = reservation_form.cleaned_data['start_time'] + duration
        
       # check for reservation conflict
-      val_error = validate_reservation(new_reservation)
+      conflict_list = get_conflicts(new_reservation)
      
       # form is valid but reservation conflict
-      if val_error is not None:
-        reservation_form.add_error(None, val_error)
+      if conflict_list:
+        for conflict in conflict_list:
+          conflicting_reservations.extend(conflict.conflicting_reservations)
+          reservation_form.add_error(None, conflict.val_error)
      
       # form is valid -- no conflict
       else:
@@ -207,7 +211,8 @@ def createReservation(request, resource_id):
     
   context = {
     'reservation_form': reservation_form,
-    'resource': resource
+    'resource': resource,
+    'conflicting_reservations': conflicting_reservations
   }
 
   return render(request, 'reservation/createReservation.html', context)
