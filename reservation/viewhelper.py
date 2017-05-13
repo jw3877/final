@@ -84,11 +84,10 @@ def email_user_reservation_confirmed(reservation):
   reservation.owner.email_user(subject, message)
 
 #
-# validate_edit_resource
+# validate_edit_time
 #
-def validate_edit_resource(resource, form):
-  time_errors = []
-  val_errors = []
+def validate_edit_time(resource, form):
+  conflicting_reservations = []
   existing_reservations = get_resource_reservations(resource)
 
   new_start_time = form.cleaned_data['start_time']
@@ -97,14 +96,8 @@ def validate_edit_resource(resource, form):
   # check times
   for reservation in existing_reservations:
     if reservation.start_time < new_start_time or reservation.end_time > new_end_time:
-      time_errors.append(reservation)
+      conflicting_reservations.append(reservation)
 
-  if time_errors:
-    val_errors.append(ValidationError(
-      _('Requested time change conflicts with existing reservations.'),
-      code='invalid'))
-      
-
-  return time_errors, val_errors
+  return conflicting_reservations
 
 

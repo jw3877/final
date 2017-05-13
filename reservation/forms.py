@@ -49,6 +49,13 @@ class ResourceForm(ModelForm):
     return cleaned_data
 
 #
+# EditResourceForm
+#
+class EditResourceForm(ResourceForm):
+  class Meta(ResourceForm.Meta):
+    exclude = ['capacity']
+
+#
 # ReservationForm
 #
 class ReservationForm(ModelForm):

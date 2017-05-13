@@ -7,9 +7,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 
 from .models import Resource, Reservation, Tag, Counter
-from .viewhelper import get_user_reservations, get_resource_reservations, add_resource_tags, get_search_results, email_user_reservation_confirmed, get_resource_tags, validate_edit_resource
-from .forms import ResourceForm, ReservationForm, UserForm, SearchForm
+from .viewhelper import get_user_reservations, get_resource_reservations, add_resource_tags, get_search_results, email_user_reservation_confirmed, get_resource_tags, validate_edit_time
+from .forms import ResourceForm, ReservationForm, UserForm, SearchForm, EditResourceForm
 from .conflicts import Conflict, get_conflicts
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
 
 from datetime import datetime, timedelta
 from django.db.models import F
@@ -250,14 +252,15 @@ def editResource(request, resource_id):
   conflicting_reservations = []
 
   if request.method == 'POST':
-    resource_form = ResourceForm(request.POST, request.FILES, instance=resource)
+    resource_form = EditResourceForm(request.POST, request.FILES, instance=resource)
     if resource_form.is_valid():
-      conflicting_reservations, val_errors = validate_edit_resource(resource, resource_form)
+      conflicting_reservations = validate_edit_time(resource, resource_form)
      
       # edit is invalid
-      if val_errors:
-        for val_error in val_errors:
-          resource_form.add_error(None, val_error)
+      if conflicting_reservations:
+        resource_form.add_error(None, ValidationError(
+          _('Time slot conflicts with existing reservations.'),
+          code='invalid'))
 
       # edit is valid, save changes
       else:
@@ -268,8 +271,9 @@ def editResource(request, resource_id):
         messages.add_message(request, messages.SUCCESS, message)
         return redirect('resource', resource.id)
 
+  # GET
   else:
-    resource_form = ResourceForm(instance=resource, initial={'tags': get_resource_tags(resource)})
+    resource_form = EditResourceForm(instance=resource, initial={'tags': get_resource_tags(resource)})
 
   context = {
     'resource_form': resource_form,
