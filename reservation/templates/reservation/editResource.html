@@ -3,6 +3,12 @@
 
   <h1>Edit resource:</h1>
 
+{% if conflicting_reservations %}
+<br>
+  The edits that you are trying to make <b>conflict</b> with the following reservations:
+  {% include "reservation/snippet/reservation_table.html" with reservation_list=conflicting_reservations class="red" %}
+{% endif %}
+
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
 <!-- Begin Form -->

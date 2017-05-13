@@ -3,12 +3,18 @@ from .models import Resource, Reservation, Tag
 from xml.etree.ElementTree import ElementTree
 from xml.etree.ElementTree import Element, tostring
 from datetime import timedelta
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
+from .conflicts import Conflict
 
 def get_date_format():
   return '%A, %B %d, %Y @ %I:%M %p'
 
 def add_resource_tags(tags, resource):
   tagNameList = tags.split()
+
+  # clear existing resource tags
+  resource.tag_set.clear()
   
   for tagName in tagNameList:
     # if tag already exists
@@ -76,5 +82,29 @@ def email_user_reservation_confirmed(reservation):
            Sincerely,
            The Management'''.format(reservation.resource.name, reservation.start_time.strftime(date_format), reservation.end_time.strftime(date_format), reservation.duration())
   reservation.owner.email_user(subject, message)
+
+#
+# validate_edit_resource
+#
+def validate_edit_resource(resource, form):
+  time_errors = []
+  val_errors = []
+  existing_reservations = get_resource_reservations(resource)
+
+  new_start_time = form.cleaned_data['start_time']
+  new_end_time = form.cleaned_data['end_time']
+
+  # check times
+  for reservation in existing_reservations:
+    if reservation.start_time < new_start_time or reservation.end_time > new_end_time:
+      time_errors.append(reservation)
+
+  if time_errors:
+    val_errors.append(ValidationError(
+      _('Requested time change conflicts with existing reservations.'),
+      code='invalid'))
+      
+
+  return time_errors, val_errors
 
 

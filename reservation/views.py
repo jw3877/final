@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 
 from .models import Resource, Reservation, Tag, Counter
-from .viewhelper import get_user_reservations, get_resource_reservations, add_resource_tags, get_search_results, email_user_reservation_confirmed, get_resource_tags
+from .viewhelper import get_user_reservations, get_resource_reservations, add_resource_tags, get_search_results, email_user_reservation_confirmed, get_resource_tags, validate_edit_resource
 from .forms import ResourceForm, ReservationForm, UserForm, SearchForm
 from .conflicts import Conflict, get_conflicts
 
@@ -20,6 +20,7 @@ from django.contrib import messages
 #
 def index(request):
   all_resources = Resource.objects.order_by('-start_time')
+  #all_resources = Resource.objects.order_by('-reservation__id').distinct()
 
   if request.user.is_authenticated:
     user_resources = Resource.objects.filter(owner=request.user).order_by('start_time')
@@ -246,23 +247,34 @@ def deleteReservation(request, reservation_id):
 @login_required
 def editResource(request, resource_id):
   resource = get_object_or_404(Resource, pk=resource_id)
+  conflicting_reservations = []
 
   if request.method == 'POST':
     resource_form = ResourceForm(request.POST, request.FILES, instance=resource)
     if resource_form.is_valid():
-      resource_form.save()
-      tags = resource_form.cleaned_data['tags']
-      add_resource_tags(tags, resource)
-      message = 'Changes to resource {0} have been saved.'.format(resource.name)
-      messages.add_message(request, messages.SUCCESS, message)
-      return redirect('resource', resource.id)
+      conflicting_reservations, val_errors = validate_edit_resource(resource, resource_form)
+     
+      # edit is invalid
+      if val_errors:
+        for val_error in val_errors:
+          resource_form.add_error(None, val_error)
+
+      # edit is valid, save changes
+      else:
+        resource_form.save()
+        tags = resource_form.cleaned_data['tags']
+        add_resource_tags(tags, resource)
+        message = 'Changes to resource {0} have been saved.'.format(resource.name)
+        messages.add_message(request, messages.SUCCESS, message)
+        return redirect('resource', resource.id)
 
   else:
     resource_form = ResourceForm(instance=resource, initial={'tags': get_resource_tags(resource)})
 
   context = {
     'resource_form': resource_form,
-    'resource': resource
+    'resource': resource,
+    'conflicting_reservations' : conflicting_reservations
   }
 
   return render(request, 'reservation/editResource.html', context)
