@@ -13,6 +13,8 @@ from django.utils import timezone
 # ResourceForm
 #
 class ResourceForm(ModelForm):
+  tags = forms.CharField(label='Tags', max_length=500, required=False)
+
   class Meta:
     model = Resource
     fields = ['name', 'start_time', 'end_time', 'capacity', 'image', 'description']
@@ -21,15 +23,9 @@ class ResourceForm(ModelForm):
          'invalid':'Capacity must be > 0.'
        },
     }
-   
-#
-# ResourceTagForm
-#
-class ResourceTagForm(ResourceForm):
-  tags = forms.CharField(label='Tags', max_length=500, required=False)
 
   def clean(self):
-    cleaned_data = super(ResourceTagForm, self).clean()
+    cleaned_data = super(ResourceForm, self).clean()
     start_time = cleaned_data.get("start_time")
     end_time = cleaned_data.get("end_time")
 
@@ -56,16 +52,12 @@ class ResourceTagForm(ResourceForm):
 # ReservationForm
 #
 class ReservationForm(ModelForm):
+  duration = forms.IntegerField(validators=[validate_duration],
+    error_messages={'invalid':'Duration must be > 0.'})
+
   class Meta:
     model = Reservation
     fields = ['start_time']
-
-#
-# ReservationDurationForm
-#
-class ReservationDurationForm(ReservationForm):
-  duration = forms.IntegerField(validators=[validate_duration],
-    error_messages={'invalid':'Duration must be > 0.'})
 
 #
 # UserForm

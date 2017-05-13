@@ -7,8 +7,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 
 from .models import Resource, Reservation, Tag, Counter
-from .viewhelper import get_user_reservations, get_resource_reservations, add_resource_tags, get_search_results, email_user_reservation_confirmed
-from .forms import ResourceForm, ReservationForm, UserForm, ResourceTagForm, ReservationDurationForm, SearchForm
+from .viewhelper import get_user_reservations, get_resource_reservations, add_resource_tags, get_search_results, email_user_reservation_confirmed, get_resource_tags
+from .forms import ResourceForm, ReservationForm, UserForm, SearchForm
 from .conflicts import Conflict, get_conflicts
 
 from datetime import datetime, timedelta
@@ -139,7 +139,7 @@ def reservation(request, reservation_id):
 @login_required
 def createResource(request):
   if request.method == 'POST':
-    resource_form = ResourceTagForm(request.POST, request.FILES)
+    resource_form = ResourceForm(request.POST, request.FILES)
     if resource_form.is_valid():
       new_resource = resource_form.save(commit=False)
       new_resource.owner = request.user
@@ -151,7 +151,7 @@ def createResource(request):
       return HttpResponseRedirect(reverse('index'))
     
   else:
-    resource_form = ResourceTagForm()
+    resource_form = ResourceForm()
 
   return render(request, 'reservation/createResource.html', {'resource_form': resource_form})
 
@@ -169,7 +169,7 @@ def createReservation(request, resource_id):
 
   # POST
   if request.method == 'POST':
-    reservation_form = ReservationDurationForm(request.POST)
+    reservation_form = ReservationForm(request.POST)
     # form is valid
     if reservation_form.is_valid():
       new_reservation = reservation_form.save(commit=False)
@@ -207,7 +207,7 @@ def createReservation(request, resource_id):
 
   # GET
   else:
-    reservation_form = ReservationDurationForm()
+    reservation_form = ReservationForm()
     
   context = {
     'reservation_form': reservation_form,
@@ -251,12 +251,14 @@ def editResource(request, resource_id):
     resource_form = ResourceForm(request.POST, request.FILES, instance=resource)
     if resource_form.is_valid():
       resource_form.save()
+      tags = resource_form.cleaned_data['tags']
+      add_resource_tags(tags, resource)
       message = 'Changes to resource {0} have been saved.'.format(resource.name)
       messages.add_message(request, messages.SUCCESS, message)
       return redirect('resource', resource.id)
 
   else:
-    resource_form = ResourceForm(instance=resource)
+    resource_form = ResourceForm(instance=resource, initial={'tags': get_resource_tags(resource)})
 
   context = {
     'resource_form': resource_form,

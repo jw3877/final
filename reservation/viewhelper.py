@@ -11,11 +11,14 @@ def add_resource_tags(tags, resource):
   tagNameList = tags.split()
   
   for tagName in tagNameList:
-    # check if tag already exists
+    # if tag already exists
     if Tag.objects.filter(name=tagName).exists():
       existing_tags = Tag.objects.filter(name=tagName)
+      # tag model has unique name field, so there should only be one.
       for tag in existing_tags:
-        tag.resources.add(resource)
+        # if resource not associated with this tag already, add it.
+        if not Tag.objects.filter(name=tagName, resources=resource).exists():
+          tag.resources.add(resource)
 
     # tag doesn't already exist
     else:
@@ -23,11 +26,20 @@ def add_resource_tags(tags, resource):
       new_tag.save()
       new_tag.resources.add(resource)
 
+def get_resource_tags(resource):
+  tags = resource.tag_set.all()
+  tag_list = []
+
+  for tag in tags:
+    tag_list.append(tag.name)
+
+  return ' '.join(tag_list)
+    
+
 def get_user_reservations(user):
   current_time = timezone.now()
   return Reservation.objects.filter(owner=user, end_time__gte=current_time).order_by('start_time')
     
-
 def get_resource_reservations(resource):
   current_time = timezone.now()
   return Reservation.objects.filter(resource=resource, end_time__gte=current_time).order_by('start_time')
