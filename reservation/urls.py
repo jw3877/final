@@ -23,7 +23,7 @@ urlpatterns = [
     url(r'^resource/(?P<resource_id>[0-9]+)/edit/$', views.editResource, name='editResource'),
 
     # ex: /resource/5/rss/
-    url(r'^resource/(?P<resource_id>[0-9]+)/rss/$', ResourceFeed(), name='rss'),
+    #url(r'^resource/(?P<resource_id>[0-9]+)/rss/$', ResourceFeed(), name='rss'),
 
     # ex: /reservation/5/
     url(r'^reservation/(?P<reservation_id>[0-9]+)/$', views.reservation, name='reservation'),
