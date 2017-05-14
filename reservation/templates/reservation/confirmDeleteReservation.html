@@ -5,7 +5,7 @@
 {% include "reservation/snippet/reservation_highlight.html" %}
 
 <h3>Are you sure you want to delete this reservation?</h3>
-<font color="green">&#9888; Warning: This action cannot be undone.</font>
+<span class="warning">&#9888; Warning: This action cannot be undone.</span>
 <br><br>
 <form action="{% url 'deleteReservation' reservation.id %}" method="post">
 {% csrf_token %}

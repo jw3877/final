@@ -22,17 +22,10 @@ from django.contrib import messages
 #
 def index(request):
   all_resources = Resource.objects.order_by('-start_time')
-  #all_resources = Resource.objects.order_by('-reservation__id').distinct()
 
   if request.user.is_authenticated:
     user_resources = Resource.objects.filter(owner=request.user).order_by('start_time')
-    user_reservations = get_user_reservations(request.user)
-
-    #user_resources = []
-    #for reservation in user_reservations:
-      #if reservation.resource not in user_resources:
-        #user_resources.append(reservation.resource)
-    
+    user_reservations = get_user_reservations(request.user) 
 
   else:
     user_resources = []
@@ -251,6 +244,7 @@ def editResource(request, resource_id):
   resource = get_object_or_404(Resource, pk=resource_id)
   conflicting_reservations = []
 
+  # POST
   if request.method == 'POST':
     resource_form = EditResourceForm(request.POST, request.FILES, instance=resource)
     if resource_form.is_valid():
